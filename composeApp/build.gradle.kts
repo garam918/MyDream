@@ -7,6 +7,13 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+
+    alias(libs.plugins.googlDevToolsKSP)
+
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.serializationPlugins)
+
+
 }
 
 kotlin {
@@ -16,7 +23,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -27,11 +34,16 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            implementation(libs.androidx.room.sqlite.wrapper)
+            implementation(libs.koin.android)
+
+            implementation(libs.googleid)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -42,6 +54,21 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            implementation(libs.navigation.compose)
+
+            implementation(libs.kizitonwose.compose.multiplatform)
+            implementation(libs.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
+
+            implementation(libs.kotlinx.serialization.json)
+
+            implementation(libs.kotlinx.datetime)
+
+            api(libs.koin.core)
+
+            implementation(libs.koin.compose.viewmodel)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -80,3 +107,13 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
+    add("kspIosX64", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+}
