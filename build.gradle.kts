@@ -9,4 +9,8 @@ plugins {
 
     alias(libs.plugins.googlDevToolsKSP) apply false
 
+    alias(libs.plugins.kotlinCocoapods) apply false
+    alias(libs.plugins.googleServices) apply false
+
+
 }

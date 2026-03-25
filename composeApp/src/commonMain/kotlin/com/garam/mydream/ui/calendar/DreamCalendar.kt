@@ -1,0 +1,410 @@
+package com.garam.mydream.ui.calendar
+
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.garam.mydream.data.local.DreamAnalysisEntity
+import com.garam.mydream.data.remote.DreamResponse
+import com.garam.mydream.localization.AppLanguage
+import com.garam.mydream.localization.LocalAppLanguage
+import com.garam.mydream.resources.MyTheme
+import com.garam.mydream.resources.fontFamily
+import com.garam.mydream.util.dayOfWeekToShortText
+import com.garam.mydream.util.localDateToDateText
+import com.garam.mydream.util.localDateToMonthText
+import com.kizitonwose.calendar.compose.HorizontalCalendar
+import com.kizitonwose.calendar.compose.rememberCalendarState
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.DayPosition
+import com.kizitonwose.calendar.core.daysOfWeek
+import com.kizitonwose.calendar.core.minusMonths
+import com.kizitonwose.calendar.core.now
+import com.kizitonwose.calendar.core.plusMonths
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
+import mydream.composeapp.generated.resources.Res
+import mydream.composeapp.generated.resources.calendar_good_dream_label
+import mydream.composeapp.generated.resources.calendar_bad_dream_label
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.ExperimentalTime
+
+
+// 캘린더 기능
+@OptIn(ExperimentalTime::class)
+@Composable
+fun DreamCalendar(
+    onNavigateToDreamInterpretation: (DreamResponse) -> Unit,
+    calendarViewModel: CalendarViewModel = koinViewModel()
+) {
+
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+
+    val dreamContentList = calendarViewModel.dreamContentList.collectAsState()
+
+    var selectedDateDreamList = dreamContentList.value.filter { it.analysisDate == selectedDate.toString() }
+
+    var selectedDreamAnalysis by remember { mutableStateOf<DreamAnalysisEntity?>(null) }
+
+    var dreamContentMap = mutableMapOf<String, DreamAnalysisEntity>()
+
+    LaunchedEffect(dreamContentList) {
+        dreamContentList.value.forEach {
+
+            dreamContentMap[it.analysisDate] = it
+
+        }
+
+    }
+
+
+    LazyColumn(
+        modifier = Modifier.background(color = MyTheme.colors.mainBackgroundColor).fillMaxSize()
+            .padding(horizontal = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+
+        item {
+
+            Column(modifier = Modifier.background(color = MyTheme.colors.mainBackgroundColor)) {
+
+                Text(
+                    text = localDateToMonthText(selectedDate),
+                    color = MyTheme.colors.textWhiteColor,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp,
+                    fontFamily = fontFamily(),
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                DrawCalendar(selectedDate, onClick = {
+                    selectedDate = it.date
+                },
+                    dreamDateMap = dreamContentMap
+                    , onMonthScroll = {
+
+                    selectedDate = if (it == LocalDate.now().yearMonth) LocalDate.now() else it.firstDay
+                })
+
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(), thickness = 1.dp,
+                    color = Color.LightGray
+                )
+            }
+
+
+        }
+
+        item {
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Text(
+                text = localDateToDateText(selectedDate),
+                color = MyTheme.colors.textWhiteColor,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        items(selectedDateDreamList) { item ->
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Card(
+                shape = RoundedCornerShape(14.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
+                colors = CardDefaults.cardColors(
+                    contentColor = MyTheme.colors.mainBackgroundColor,
+                    containerColor = MyTheme.colors.mainBackgroundColor
+                ),
+                modifier = Modifier.clickable(enabled = true, onClick = {
+
+                    selectedDreamAnalysis = item
+                    onNavigateToDreamInterpretation(item.toDreamResponse())
+
+                    // 꿈 분석 완료 화면으로 이동
+                })
+            ) {
+
+                Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+
+                    Row {
+                        dreamListLabel(item.score)?.let { label ->
+                            val goodDreamLabel = stringResource(Res.string.calendar_good_dream_label)
+                            Row(
+                                modifier = Modifier
+                                    .border(
+                                        width = 1.dp,
+                                        color = if (label == goodDreamLabel) Color(0xFFD7E7FF) else Color(0xFFFFD7D7),
+                                        shape = RoundedCornerShape(14.dp)
+                                    )
+                                    .background(
+                                        color = if (label == goodDreamLabel) Color(0xFFF4F8FF) else Color(0xFFFFF5F5),
+                                        shape = RoundedCornerShape(14.dp)
+                                    )
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+
+                                Text(
+                                    text = label,
+                                    fontFamily = fontFamily(),
+                                    color = if (label == goodDreamLabel) Color(0xFF3E7BFA) else Color(0xFFE5484D),
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+
+                        Text(text = "") // 꿈을 기록한 시간
+
+
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = item.title,
+                        fontFamily = fontFamily(),
+                        fontWeight = FontWeight.Bold,
+                        color = MyTheme.colors.textWhiteColor,
+                        fontSize = 18.sp
+                    ) // 꿈 제목 요약
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(text = item.analysis, maxLines = 2,
+                        fontFamily = fontFamily(),
+                        fontWeight = FontWeight.Normal,
+                        color = MyTheme.colors.textWhiteColor,
+                        fontSize = 15.sp) // 꿈 내용 상세 내용 글자수 제한해서
+
+                }
+            }
+
+        }
+
+
+    }
+
+
+}
+
+private fun DreamAnalysisEntity.toDreamResponse(): DreamResponse {
+    return DreamResponse(
+        title = title,
+        score = score,
+        analysis = analysis,
+        energy_label = energy_label,
+        energy_percent = energy_percent,
+        good_points = good_points,
+        warn_points = warn_points,
+        lucky_item = lucky_item,
+        lucky_color = lucky_color
+    )
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+fun DrawCalendar(
+    selectedDate: LocalDate,
+    dreamDateMap : MutableMap<String, DreamAnalysisEntity>,
+    onClick: (CalendarDay) -> Unit,
+    onMonthScroll: (YearMonth) -> Unit
+) {
+
+    val currentMonth = remember { YearMonth.now() }
+
+    val startMonth = remember { currentMonth.minusMonths(100) }
+    val endMonth = remember { currentMonth.plusMonths(100) }
+
+    val daysOfWeek = daysOfWeek(firstDayOfWeek = DayOfWeek.SUNDAY)
+
+    val monthCalendarState = rememberCalendarState(
+        startMonth = startMonth,
+        endMonth = endMonth,
+        firstVisibleMonth = currentMonth,
+        firstDayOfWeek = daysOfWeek.first()
+    )
+
+    LaunchedEffect(monthCalendarState) {
+
+        snapshotFlow { monthCalendarState.firstVisibleMonth.yearMonth }
+            .distinctUntilChanged()
+            .collect {
+
+                onMonthScroll(it)
+
+            }
+    }
+
+    LaunchedEffect(selectedDate) {
+
+        monthCalendarState.scrollToMonth(selectedDate.yearMonth)
+
+    }
+
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+
+        HorizontalCalendar(
+            state = monthCalendarState,
+            dayContent = { day ->
+                DrawDay(day, onClick = {
+                    onClick(day)
+                }, selectedDate, dreamMarker = dreamDateMap[day.date.toString()]?.score?.toDreamMarker())
+            },
+            monthHeader = {
+                DaysOfWeekTitle(daysOfWeek)
+
+            },
+            userScrollEnabled = true,
+
+
+            )
+    }
+}
+
+@Composable
+private fun DrawDay(
+    day: CalendarDay,
+    onClick: (CalendarDay) -> Unit,
+    selectedDate: LocalDate,
+    dreamMarker: DreamMarker?
+) {
+
+    Column(
+        modifier = Modifier
+            .aspectRatio(1f)
+            .clickable(
+                enabled = day.position == DayPosition.MonthDate,
+                onClick = { onClick(day) }
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Box(
+            modifier = Modifier.background(
+                color = if (day.date == selectedDate) MyTheme.colors.calendarSelectedDateBgColor else Color.Unspecified,
+                if (day.date == selectedDate) CircleShape else ShapeDefaults.Small
+            ).size(24.dp),
+
+            contentAlignment = Alignment.Center
+        ) {
+            if (day.position == DayPosition.MonthDate) {
+                Text(
+                    text = day.date.day.toString(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 14.sp,
+                    color = if (day.date == selectedDate) Color.White else if(day.date.dayOfWeek == DayOfWeek.SUNDAY) Color.Red else if(day.date.dayOfWeek == DayOfWeek.SATURDAY) Color.Blue else MyTheme.colors.calendarTextColor,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = fontFamily(),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+
+                dreamMarker?.let {
+                    Canvas(modifier = Modifier.align(Alignment.BottomCenter).size(2.dp)) {
+                        drawCircle(
+                            color = it.color,
+                            radius = 4.dp.value
+                        )
+                    }
+
+
+                }
+
+            }
+        }
+
+
+    }
+
+
+}
+
+private enum class DreamMarker(val color: Color) {
+    GOOD(Color(0xFF3E7BFA)),
+    NORMAL(Color(0xFF111827)),
+    BAD(Color(0xFFE5484D))
+}
+
+private fun Int.toDreamMarker(): DreamMarker {
+    return when {
+        this >= 80 -> DreamMarker.GOOD
+        this < 60 -> DreamMarker.BAD
+        else -> DreamMarker.NORMAL
+    }
+}
+
+@Composable
+private fun dreamListLabel(score: Int): String? {
+    return when {
+        score >= 80 -> stringResource(Res.string.calendar_good_dream_label)
+        score < 60 -> stringResource(Res.string.calendar_bad_dream_label)
+        else -> null
+    }
+}
+
+@Composable
+fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        for (dayOfWeek in daysOfWeek) {
+            Text(
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+                text = if (LocalAppLanguage.current == AppLanguage.KOREAN) {
+                    dayOfWeekToShortText(dayOfWeek)
+                } else {
+                    dayOfWeekToShortText(dayOfWeek).take(1)
+                },
+                fontFamily = fontFamily(),
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+        }
+    }
+}

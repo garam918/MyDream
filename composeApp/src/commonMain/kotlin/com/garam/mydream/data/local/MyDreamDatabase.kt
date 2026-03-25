@@ -2,6 +2,7 @@ package com.garam.mydream.data.local
 
 import androidx.room.ConstructedBy
 import androidx.room.Database
+import androidx.room.AutoMigration
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
@@ -10,12 +11,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
 
-@Database(entities = [DreamAnalysisEntity::class], version = 1, exportSchema = true)
+@Database(
+    entities = [DreamAnalysisEntity::class, UserDataEntity::class],
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)]
+)
 @ConstructedBy(MyDreamDatabaseConstructor::class)
 @TypeConverters(DreamTypeConverter::class)
 abstract class MyDreamDatabase : RoomDatabase() {
 
- abstract fun dreamAnalysisDao() : DreamAnalysisDao
+    abstract fun dreamAnalysisDao(): DreamAnalysisDao
+
+    abstract fun userDataDao(): UserDataDao
 
 }
 
@@ -26,6 +34,6 @@ expect object MyDreamDatabaseConstructor : RoomDatabaseConstructor<MyDreamDataba
 
 fun getMyDreamDatabase(
     builder: RoomDatabase.Builder<MyDreamDatabase>
-) : MyDreamDatabase = builder.setDriver(BundledSQLiteDriver())
+): MyDreamDatabase = builder.setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()

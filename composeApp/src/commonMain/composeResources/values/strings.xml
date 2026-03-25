@@ -1,0 +1,115 @@
+<resources>
+    <string name="app_name">MyDream</string>
+
+    <string name="common_back">Back</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_notice">Notice</string>
+
+    <string name="onboarding_top_text">AI DREAM ANALYSIS</string>
+    <string name="onboarding_app_name_text">Dream Insight</string>
+    <string name="onboarding_app_explain_text">Discover the hidden messages in your dreams.\nAI will help interpret what they mean.</string>
+    <string name="onboarding_start_btn_text">Get Started</string>
+
+    <string name="login_bottom_sheet_title_text">Log In</string>
+    <string name="login_bottom_sheet_explain_text">Log in and receive your personal dream analysis report.</string>
+    <string name="login_bottom_sheet_google_login_btn_text">Continue with Google</string>
+    <string name="login_bottom_sheet_apple_login_btn_text">Continue with Apple</string>
+    <string name="login_bottom_sheet_guest_login_btn_text">Continue without logging in</string>
+
+    <string name="bottom_menu_today_dream_title_text">Today’s Dream</string>
+    <string name="bottom_menu_dream_calendar_title_text">Dream Calendar</string>
+    <string name="bottom_menu_today_tarot_title_text">Today’s Tarot</string>
+    <string name="bottom_menu_insight_title_text">Insight</string>
+    <string name="bottom_menu_my_info_title_text">My Info</string>
+
+    <string name="dream_record_title_text">What kind of dream did you have?</string>
+    <string name="dream_record_explain_text">Write it down before it fades.</string>
+    <string name="dream_record_dream_label_text">Dream Title</string>
+    <string name="dream_record_dream_label_place_holder_text">Enter the title of your dream</string>
+    <string name="dream_record_dream_content_title_text">Dream Details</string>
+    <string name="dream_record_dream_content_place_holder_text">Describe it in detail. Who was there? How did you feel? The more specific you are, the more accurate the interpretation can be.</string>
+    <string name="dream_record_analysis_btn_text">Start AI Dream Analysis</string>
+    <string name="dream_record_limit_loading">Checking how many dream interpretations you can use today.</string>
+    <string name="dream_record_limit_remaining">You have %1$d free dream interpretation(s) left today.</string>
+    <string name="dream_record_limit_ad_available">You’ve used both free tries. Watch an ad to unlock 1 more interpretation.</string>
+    <string name="dream_record_limit_exhausted">You’ve used all 3 dream interpretations available today. Two more will open tomorrow.</string>
+    <string name="dream_record_blank_content_message">Please enter your dream details.</string>
+    <string name="dream_record_submit_failed">Dream interpretation failed. Please try again in a moment.</string>
+    <string name="dream_record_reward_ad_title">Use One More Interpretation</string>
+    <string name="dream_record_reward_ad_description">You’ve used both free dream interpretations for today. If you continue, a rewarded ad will play. Once you finish watching it, 1 extra interpretation will be added right away.</string>
+    <string name="dream_record_reward_ad_loading">Loading the rewarded ad.</string>
+    <string name="dream_record_reward_ad_success">You finished watching the ad and received 1 extra interpretation.</string>
+    <string name="dream_record_reward_ad_not_completed">You didn’t finish watching the ad, so the extra interpretation was not granted.</string>
+    <string name="dream_record_reward_ad_failed">Couldn’t load the rewarded ad. Please try again in a moment.</string>
+
+    <string name="date_picker_title">Select Date</string>
+
+    <string name="calendar_good_dream_label">Good Dream</string>
+    <string name="calendar_bad_dream_label">Bad Dream</string>
+
+    <string name="dream_interpretation_screen_title">Interpretation Result</string>
+    <string name="dream_interpretation_analysis_title">AI Dream Interpretation</string>
+    <string name="dream_interpretation_energy_negative">Anxiety/Fear</string>
+    <string name="dream_interpretation_energy_positive">Hope/Expectation</string>
+    <string name="dream_interpretation_energy_score">Positive energy %1$d%</string>
+    <string name="dream_interpretation_fortune_score_title">Today’s Fortune Score</string>
+    <string name="dream_interpretation_score_unit">pts</string>
+    <string name="dream_interpretation_expect_title">Look Forward To</string>
+    <string name="dream_interpretation_expect_fallback_1">Unexpected good news</string>
+    <string name="dream_interpretation_expect_fallback_2">A burst of creativity</string>
+    <string name="dream_interpretation_caution_title">Be Careful</string>
+    <string name="dream_interpretation_caution_fallback_1">Impulsive spending</string>
+    <string name="dream_interpretation_caution_fallback_2">Sharper-than-usual words</string>
+    <string name="dream_interpretation_lucky_item_title">Today’s Lucky Item</string>
+    <string name="dream_interpretation_lucky_object_title">Lucky Object</string>
+    <string name="dream_interpretation_lucky_color_title">Lucky Color</string>
+
+    <string name="setting_screen_title">Settings</string>
+    <string name="setting_current_account_title">Current Logged-in Account</string>
+    <string name="setting_logged_in_account_title">Logged-in Account</string>
+    <string name="setting_empty_email">No email information available.</string>
+    <string name="setting_account_management_title">Manage My Account</string>
+    <string name="setting_account_management_subtitle">Log out, delete account, and check account information</string>
+    <string name="setting_language_menu_title">App Language</string>
+    <string name="setting_theme_menu_title">Display Mode</string>
+    <string name="setting_notification_menu_title">Notification Time</string>
+    <string name="setting_notification_menu_subtitle">Choose when you want to receive push notifications</string>
+    <string name="setting_subscription_menu_title">Subscription</string>
+    <string name="setting_subscription_menu_subtitle">Check and manage your current subscription status</string>
+    <string name="setting_terms_of_service_title">Terms of Service</string>
+    <string name="setting_privacy_policy_title">Privacy Policy</string>
+    <string name="setting_current_selection_format">Current selection: %1$s</string>
+    <string name="setting_language_korean">Korean</string>
+    <string name="setting_language_english">English</string>
+    <string name="setting_language_selection_description">Choose the language you want to use in the app.</string>
+    <string name="setting_language_korean_description">Settings and guidance text will be shown in Korean.</string>
+    <string name="setting_language_english_description">Settings and guidance text will be shown in English.</string>
+    <string name="setting_theme_light">Light Mode</string>
+    <string name="setting_theme_dark">Dark Mode</string>
+    <string name="setting_theme_selection_description">Choose the display mode you want to use in the app.</string>
+    <string name="setting_theme_light_description">Shows the screen with a bright background.</string>
+    <string name="setting_theme_dark_description">Shows the screen with a dark background.</string>
+    <string name="setting_logout_button">Log Out</string>
+    <string name="setting_delete_account_button">Delete Account</string>
+    <string name="setting_logout_dialog_title">Would you like to log out?</string>
+    <string name="setting_logout_dialog_description">You will be logged out of the current account and returned to the onboarding screen.</string>
+    <string name="setting_delete_dialog_title">Do you want to delete your account?</string>
+    <string name="setting_delete_dialog_description">Once your account is deleted, it cannot be restored.</string>
+    <string name="setting_notification_placeholder_title">Notification time settings</string>
+    <string name="setting_notification_placeholder_description">This area can be extended so the user can choose a preferred notification time.</string>
+    <string name="setting_subscription_placeholder_title">Subscription management</string>
+    <string name="setting_subscription_placeholder_description">This is a good place to connect the current plan, billing status, and restore purchases.</string>
+
+    <string name="today_tarot_title">Today’s Unconscious Message</string>
+    <string name="today_tarot_subtitle_before_selection">Choose the one card you feel intuitively drawn to.</string>
+    <string name="today_tarot_subtitle_after_selection">This is the result your unconscious selected for you.</string>
+    <string name="today_tarot_card_fool_name">The Fool</string>
+    <string name="today_tarot_card_fool_description">It represents a new beginning. Today, don’t overcalculate. Follow what your heart naturally wants to try.</string>
+    <string name="today_tarot_card_magician_name">The Magician</string>
+    <string name="today_tarot_card_magician_description">You already have everything you need within you. It’s a great day to begin something with confidence.</string>
+    <string name="today_tarot_card_priestess_name">The High Priestess</string>
+    <string name="today_tarot_card_priestess_description">Your intuition is especially sharp today. Listen to your inner voice more than what appears on the surface.</string>
+    <string name="today_tarot_card_world_name">The World</string>
+    <string name="today_tarot_card_world_description">A chapter is successfully coming to completion. Enjoy the sense of accomplishment that comes with it.</string>
+</resources>
