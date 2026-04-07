@@ -1,4 +1,4 @@
-package com.garam.mydream.ui.calendar
+package com.garam.mydream.feature.calendar
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -20,9 +20,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,15 +44,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.garam.mydream.data.local.DreamAnalysisEntity
-import com.garam.mydream.data.remote.DreamResponse
-import com.garam.mydream.localization.AppLanguage
-import com.garam.mydream.localization.LocalAppLanguage
-import com.garam.mydream.resources.MyTheme
-import com.garam.mydream.resources.fontFamily
-import com.garam.mydream.util.dayOfWeekToShortText
-import com.garam.mydream.util.localDateToDateText
-import com.garam.mydream.util.localDateToMonthText
+import com.garam.mydream.core.database.DreamAnalysisEntity
+import com.garam.mydream.core.network.DreamResponse
+import com.garam.mydream.core.localization.AppLanguage
+import com.garam.mydream.core.localization.LocalAppLanguage
+import com.garam.mydream.core.designsystem.MyTheme
+import com.garam.mydream.core.designsystem.fontFamily
+import com.garam.mydream.core.util.dayOfWeekToShortText
+import com.garam.mydream.core.util.localDateToDateText
+import com.garam.mydream.core.util.localDateToMonthText
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -65,6 +69,13 @@ import kotlinx.datetime.yearMonth
 import mydream.composeapp.generated.resources.Res
 import mydream.composeapp.generated.resources.calendar_good_dream_label
 import mydream.composeapp.generated.resources.calendar_bad_dream_label
+import mydream.composeapp.generated.resources.calendar_delete_button
+import mydream.composeapp.generated.resources.calendar_delete_dialog_description
+import mydream.composeapp.generated.resources.calendar_delete_dialog_title
+import mydream.composeapp.generated.resources.calendar_delete_failed_message
+import mydream.composeapp.generated.resources.common_cancel
+import mydream.composeapp.generated.resources.common_confirm
+import mydream.composeapp.generated.resources.common_notice
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
@@ -81,10 +92,12 @@ fun DreamCalendar(
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
 
     val dreamContentList = calendarViewModel.dreamContentList.collectAsState()
+    val dreamDeleteState by calendarViewModel.dreamDeleteState.collectAsState()
 
     var selectedDateDreamList = dreamContentList.value.filter { it.analysisDate == selectedDate.toString() }
 
     var selectedDreamAnalysis by remember { mutableStateOf<DreamAnalysisEntity?>(null) }
+    var dreamPendingDelete by remember { mutableStateOf<DreamAnalysisEntity?>(null) }
 
     var dreamContentMap = mutableMapOf<String, DreamAnalysisEntity>()
 
@@ -95,6 +108,101 @@ fun DreamCalendar(
 
         }
 
+    }
+
+    if (dreamPendingDelete != null) {
+        AlertDialog(
+            onDismissRequest = {
+                if (dreamDeleteState.deletingDreamId == null) {
+                    dreamPendingDelete = null
+                }
+            },
+            title = {
+                Text(
+                    text = stringResource(Res.string.calendar_delete_dialog_title),
+                    fontFamily = fontFamily(),
+                    fontWeight = FontWeight.SemiBold,
+                    color = MyTheme.colors.textWhiteColor
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(Res.string.calendar_delete_dialog_description),
+                    fontFamily = fontFamily(),
+                    color = MyTheme.colors.textWhiteColor.copy(alpha = 0.8f)
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        dreamPendingDelete?.id?.let(calendarViewModel::deleteDream)
+                    },
+                    enabled = dreamDeleteState.deletingDreamId == null,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE5484D))
+                ) {
+                    Text(
+                        text = stringResource(Res.string.calendar_delete_button),
+                        fontFamily = fontFamily()
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        dreamPendingDelete = null
+                    },
+                    enabled = dreamDeleteState.deletingDreamId == null
+                ) {
+                    Text(
+                        text = stringResource(Res.string.common_cancel),
+                        fontFamily = fontFamily()
+                    )
+                }
+            },
+            containerColor = MyTheme.colors.cardBgColor
+        )
+    }
+
+    if (dreamDeleteState.lastDeleteFailed) {
+        AlertDialog(
+            onDismissRequest = {
+                calendarViewModel.clearDeleteFailure()
+            },
+            title = {
+                Text(
+                    text = stringResource(Res.string.common_notice),
+                    fontFamily = fontFamily(),
+                    fontWeight = FontWeight.SemiBold,
+                    color = MyTheme.colors.textWhiteColor
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(Res.string.calendar_delete_failed_message),
+                    fontFamily = fontFamily(),
+                    color = MyTheme.colors.textWhiteColor.copy(alpha = 0.8f)
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        calendarViewModel.clearDeleteFailure()
+                    }
+                ) {
+                    Text(
+                        text = stringResource(Res.string.common_confirm),
+                        fontFamily = fontFamily()
+                    )
+                }
+            },
+            containerColor = MyTheme.colors.cardBgColor
+        )
+    }
+
+    LaunchedEffect(dreamDeleteState.deletingDreamId) {
+        if (dreamDeleteState.deletingDreamId == null && dreamPendingDelete != null && !dreamDeleteState.lastDeleteFailed) {
+            dreamPendingDelete = null
+        }
     }
 
 
@@ -199,7 +307,21 @@ fun DreamCalendar(
                             }
                         }
 
-                        Text(text = "") // 꿈을 기록한 시간
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Text(
+                            text = stringResource(Res.string.calendar_delete_button),
+                            fontFamily = fontFamily(),
+                            color = Color(0xFFE5484D),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp,
+                            modifier = Modifier.clickable(
+                                enabled = dreamDeleteState.deletingDreamId == null,
+                                onClick = {
+                                    dreamPendingDelete = item
+                                }
+                            )
+                        )
 
 
                     }

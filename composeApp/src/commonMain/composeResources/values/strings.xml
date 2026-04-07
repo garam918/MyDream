@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MyDream</string>
+    <string name="google_web_client_id">894671126399-1i6nddeagqc6fgb3akhib0tcvehfmqcf.apps.googleusercontent.com</string>
+    <string name="google_ios_oauth_client_id">894671126399-uvnm9ohhvgg92lahjlqp6i5ttojo9ma9.apps.googleusercontent.com</string>
 
     <string name="common_back">Back</string>
     <string name="common_cancel">Cancel</string>
@@ -47,6 +49,10 @@
 
     <string name="calendar_good_dream_label">Good Dream</string>
     <string name="calendar_bad_dream_label">Bad Dream</string>
+    <string name="calendar_delete_button">Delete</string>
+    <string name="calendar_delete_dialog_title">Delete this dream record?</string>
+    <string name="calendar_delete_dialog_description">The selected dream analysis will be removed from both your device and cloud backup.</string>
+    <string name="calendar_delete_failed_message">Couldn’t delete the dream record. Please try again in a moment.</string>
 
     <string name="dream_interpretation_screen_title">Interpretation Result</string>
     <string name="dream_interpretation_analysis_title">AI Dream Interpretation</string>

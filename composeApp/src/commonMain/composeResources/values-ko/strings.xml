@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MyDream</string>
+    <string name="google_web_client_id">894671126399-1i6nddeagqc6fgb3akhib0tcvehfmqcf.apps.googleusercontent.com</string>
+    <string name="google_ios_oauth_client_id">894671126399-uvnm9ohhvgg92lahjlqp6i5ttojo9ma9.apps.googleusercontent.com</string>
 
     <string name="common_back">뒤로가기</string>
     <string name="common_cancel">취소</string>
@@ -49,6 +51,10 @@
 
     <string name="calendar_good_dream_label">길몽</string>
     <string name="calendar_bad_dream_label">흉몽</string>
+    <string name="calendar_delete_button">삭제</string>
+    <string name="calendar_delete_dialog_title">이 꿈 기록을 삭제할까요?</string>
+    <string name="calendar_delete_dialog_description">선택한 꿈 해몽 기록은 기기와 클라우드 백업에서 모두 삭제됩니다.</string>
+    <string name="calendar_delete_failed_message">꿈 기록을 삭제하지 못했어요. 잠시 후 다시 시도해 주세요.</string>
 
     <string name="dream_interpretation_screen_title">해몽 결과</string>
     <string name="dream_interpretation_analysis_title">AI 꿈 해몽 분석</string>
