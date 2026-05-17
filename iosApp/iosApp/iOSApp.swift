@@ -7,8 +7,8 @@ struct iOSApp: App {
 
     init() {
 
-        KoinKt.doInitKoinIos()
         FirebaseApp.configure()
+        KoinKt.doInitKoinIos()
 
     }
 
