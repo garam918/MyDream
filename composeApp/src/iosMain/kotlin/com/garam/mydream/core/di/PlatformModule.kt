@@ -3,6 +3,8 @@ package com.garam.mydream.core.di
 import com.garam.mydream.core.database.MyDreamDatabase
 import com.garam.mydream.core.database.getMyDreamDatabase
 import com.garam.mydream.core.database.getDatabaseBuilder
+import com.garam.mydream.core.platform.IosUrlLauncher
+import com.garam.mydream.core.platform.UrlLauncher
 import com.garam.mydream.core.settings.AppSettingsStorage
 import com.garam.mydream.core.settings.IosAppSettingsStorage
 import org.koin.core.module.Module
@@ -11,6 +13,7 @@ import org.koin.dsl.module
 
 actual fun platformModule(): Module = module {
     single<AppSettingsStorage> { IosAppSettingsStorage() }
+    single<UrlLauncher> { IosUrlLauncher() }
     single<MyDreamDatabase> {
         val builder = getDatabaseBuilder()
         getMyDreamDatabase(builder)

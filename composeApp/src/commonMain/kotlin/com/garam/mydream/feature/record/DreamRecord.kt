@@ -2,17 +2,22 @@ package com.garam.mydream.feature.record
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -33,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexilabs.basic.ads.DependsOnGoogleMobileAds
 import app.lexilabs.basic.ads.composable.RewardedAd
+import com.garam.mydream.core.ads.rewardedAdUnitId
 import com.garam.mydream.core.network.DreamResponse
 import com.garam.mydream.core.designsystem.MyTheme
 import com.garam.mydream.core.designsystem.fontFamily
-import com.garam.mydream.feature.ads.AdScreen
 import com.garam.mydream.core.ui.DateSelectDialog
 import com.garam.mydream.core.util.localDateToText
 import com.kizitonwose.calendar.core.now
@@ -96,6 +101,7 @@ fun DreamRecord(
     val rewardAdNotCompletedMessage = stringResource(Res.string.dream_record_reward_ad_not_completed)
     val rewardAdFailedMessage = stringResource(Res.string.dream_record_reward_ad_failed)
     val limitExhaustedMessage = stringResource(Res.string.dream_record_limit_exhausted)
+    val rewardedAdUnitIdValue = rewardedAdUnitId()
 
     @Composable
     fun limitGuideText(): String {
@@ -207,6 +213,7 @@ fun DreamRecord(
 
     if (showRewardedAd) {
         RewardedAd(
+            adUnitId = rewardedAdUnitIdValue,
             onRewardEarned = {
                 rewardGranted = true
                 shouldRunInterpretationAfterReward = true
@@ -237,10 +244,15 @@ fun DreamRecord(
         modifier = Modifier
             .fillMaxSize()
             .background(color = MyTheme.colors.mainBackgroundColor)
+            .imePadding()
             .padding(horizontal = 14.dp)
     ) {
 
-        Column {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
             TextButton(
                 onClick = {
                     isCalendarDialogShow = true
@@ -278,48 +290,46 @@ fun DreamRecord(
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp
             )
-        }
-
-        Column {
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Text(
-                text = stringResource(Res.string.dream_record_dream_label_text),
-                color = MyTheme.colors.textWhiteColor,
-                fontFamily = fontFamily(),
-                fontWeight = FontWeight.Medium,
-                fontSize = 18.sp
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            TextField(
-                value = dreamTitle,
-                onValueChange = {
-                    dreamTitle = it
-                },
-                placeholder = {
-                    Text(text = stringResource(Res.string.dream_record_dream_label_place_holder_text))
-                },
-                minLines = 1,
-                maxLines = 1,
-                shape = RoundedCornerShape(24.dp),
-                colors = TextFieldDefaults.colors(
-                    disabledContainerColor = MyTheme.colors.cardBgColor,
-                    focusedContainerColor = MyTheme.colors.cardBgColor,
-                    unfocusedContainerColor = MyTheme.colors.cardBgColor,
-                    focusedTextColor = MyTheme.colors.textWhiteColor,
-                    disabledTextColor = MyTheme.colors.textWhiteColor,
-                    unfocusedTextColor = MyTheme.colors.textWhiteColor,
-                    disabledIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Red
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
 
             Spacer(modifier = Modifier.height(30.dp))
+
+//            Text(
+//                text = stringResource(Res.string.dream_record_dream_label_text),
+//                color = MyTheme.colors.textWhiteColor,
+//                fontFamily = fontFamily(),
+//                fontWeight = FontWeight.Medium,
+//                fontSize = 18.sp
+//            )
+//
+//            Spacer(modifier = Modifier.height(14.dp))
+//
+//            TextField(
+//                value = dreamTitle,
+//                onValueChange = {
+//                    dreamTitle = it
+//                },
+//                placeholder = {
+//                    Text(text = stringResource(Res.string.dream_record_dream_label_place_holder_text))
+//                },
+//                minLines = 1,
+//                maxLines = 1,
+//                shape = RoundedCornerShape(24.dp),
+//                colors = TextFieldDefaults.colors(
+//                    disabledContainerColor = MyTheme.colors.cardBgColor,
+//                    focusedContainerColor = MyTheme.colors.cardBgColor,
+//                    unfocusedContainerColor = MyTheme.colors.cardBgColor,
+//                    focusedTextColor = MyTheme.colors.textWhiteColor,
+//                    disabledTextColor = MyTheme.colors.textWhiteColor,
+//                    unfocusedTextColor = MyTheme.colors.textWhiteColor,
+//                    disabledIndicatorColor = Color.Transparent,
+//                    focusedIndicatorColor = Color.Transparent,
+//                    unfocusedIndicatorColor = Color.Transparent,
+//                    errorIndicatorColor = Color.Red
+//                ),
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//
+//            Spacer(modifier = Modifier.height(30.dp))
 
             Text(
                 text = stringResource(Res.string.dream_record_dream_content_title_text),
@@ -359,7 +369,7 @@ fun DreamRecord(
                     unfocusedIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Red
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().height(300.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -373,12 +383,10 @@ fun DreamRecord(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End
             )
-        }
 
-        LazyRow {
+            LazyRow {
+            }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         Text(
             text = limitGuideText(),
@@ -430,12 +438,19 @@ fun DreamRecord(
             ),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = stringResource(Res.string.dream_record_analysis_btn_text),
-                color = MyTheme.colors.btnTextColor
-            )
+            if (dreamAnalysisEnabled) {
+                Text(
+                    text = stringResource(Res.string.dream_record_analysis_btn_text),
+                    color = MyTheme.colors.btnTextColor
+                )
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(26.dp),
+                    color = Color(0xFF9CA3AF),
+                    strokeWidth = 3.dp
+                )
+            }
         }
 
-        AdScreen()
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -46,16 +47,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.garam.mydream.core.auth.AuthRepositoryProvider
-import com.garam.mydream.core.localization.AppLanguage
 import com.garam.mydream.core.designsystem.MyTheme
 import com.garam.mydream.core.designsystem.fontFamily
+import com.garam.mydream.core.localization.AppLanguage
+import com.garam.mydream.feature.ads.AdScreen
 import kotlinx.coroutines.launch
 import mydream.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private const val TERMS_OF_SERVICE_URL = "https://example.com/terms"
-private const val PRIVACY_POLICY_URL = "https://example.com/privacy"
+private const val TERMS_OF_SERVICE_URL = "https://garam-portfolio.netlify.app/mydream/terms/terms"
+private const val PRIVACY_POLICY_URL = "https://garam-portfolio.netlify.app/mydream/privacy/privacy"
+private const val FEEDBACK_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeRQkjfMjlL3lcQeE8esWVBJTUOq7kIK2SkRt5ekjD3WtRn9A/viewform?usp=publish-editor"
 
 enum class AppThemeMode {
     LIGHT,
@@ -97,7 +100,7 @@ fun SettingScreen(
                 .fillMaxSize()
                 .background(MyTheme.colors.mainBackgroundColor)
                 .padding(innerPadding),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
+            contentPadding = PaddingValues(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
             item {
@@ -115,7 +118,22 @@ fun SettingScreen(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    color = Color.White
+                    color = MyTheme.colors.cardBgColor
+                ) {
+                    SettingMenuItem(
+                        title = stringResource(Res.string.setting_feedback_title),
+                        subtitle = stringResource(Res.string.setting_feedback_subtitle),
+                        showDivider = false,
+                        onClick = { uriHandler.openUri(FEEDBACK_FORM_URL) }
+                    )
+                }
+            }
+
+            item {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    color = MyTheme.colors.cardBgColor
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         SettingMenuItem(
@@ -139,16 +157,16 @@ fun SettingScreen(
                             ),
                             onClick = onNavigateToThemeSetting
                         )
-                        SettingMenuItem(
-                            title = stringResource(Res.string.setting_notification_menu_title),
-                            subtitle = stringResource(Res.string.setting_notification_menu_subtitle),
-                            onClick = onNavigateToNotificationTimeSetting
-                        )
-                        SettingMenuItem(
-                            title = stringResource(Res.string.setting_subscription_menu_title),
-                            subtitle = stringResource(Res.string.setting_subscription_menu_subtitle),
-                            onClick = onNavigateToSubscriptionManagement
-                        )
+//                        SettingMenuItem(
+//                            title = stringResource(Res.string.setting_notification_menu_title),
+//                            subtitle = stringResource(Res.string.setting_notification_menu_subtitle),
+//                            onClick = onNavigateToNotificationTimeSetting
+//                        )
+//                        SettingMenuItem(
+//                            title = stringResource(Res.string.setting_subscription_menu_title),
+//                            subtitle = stringResource(Res.string.setting_subscription_menu_subtitle),
+//                            onClick = onNavigateToSubscriptionManagement
+//                        )
                         SettingMenuItem(
                             title = stringResource(Res.string.setting_terms_of_service_title),
                             onClick = { uriHandler.openUri(TERMS_OF_SERVICE_URL) }
@@ -159,6 +177,16 @@ fun SettingScreen(
                             onClick = { uriHandler.openUri(PRIVACY_POLICY_URL) }
                         )
                     }
+                }
+            }
+
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                ) {
+                    AdScreen()
                 }
             }
         }
@@ -269,7 +297,7 @@ fun AccountManagementScreen(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                color = Color.White
+                color = MyTheme.colors.cardBgColor
             ) {
                 Column(
                     modifier = Modifier
@@ -284,8 +312,8 @@ fun AccountManagementScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(18.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF111827),
-                            contentColor = Color.White
+                            containerColor = MyTheme.colors.dreamBtnColor,
+                            contentColor = MyTheme.colors.btnTextColor
                         )
                     ) {
                         Text(
@@ -394,13 +422,14 @@ private fun BaseSettingScaffold(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
                 title = {
                     Text(
                         text = title,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = fontFamily(),
-                        color = Color.Black
+                        color = MyTheme.colors.textWhiteColor
                     )
                 },
                 navigationIcon = {
@@ -408,18 +437,18 @@ private fun BaseSettingScaffold(
                         Icon(
                             painter = painterResource(Res.drawable.back_btn_icon),
                             contentDescription = stringResource(Res.string.common_back),
-                            tint = Color.Black,
+                            tint = MyTheme.colors.textWhiteColor,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarColors(
                     containerColor = MyTheme.colors.mainBackgroundColor,
-                    titleContentColor = Color.Black,
-                    navigationIconContentColor = Color.Black,
-                    actionIconContentColor = Color.Black,
+                    titleContentColor = MyTheme.colors.textWhiteColor,
+                    navigationIconContentColor = MyTheme.colors.textWhiteColor,
+                    actionIconContentColor = MyTheme.colors.textWhiteColor,
                     scrolledContainerColor = MyTheme.colors.mainBackgroundColor,
-                    subtitleContentColor = Color.Black
+                    subtitleContentColor = MyTheme.colors.textWhiteColor
                 )
             )
         },
@@ -430,7 +459,6 @@ private fun BaseSettingScaffold(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MyTheme.colors.mainBackgroundColor)
-                .windowInsetsPadding(WindowInsets.statusBars)
         ) {
             content(innerPadding)
         }
@@ -460,7 +488,7 @@ private fun SettingMenuItem(
                     fontFamily = fontFamily(),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF111827)
+                    color = MyTheme.colors.textWhiteColor
                 )
 
                 if (subtitle != null) {
@@ -469,7 +497,7 @@ private fun SettingMenuItem(
                         text = subtitle,
                         fontFamily = fontFamily(),
                         fontSize = 13.sp,
-                        color = Color(0xFF6B7280)
+                        color = MyTheme.colors.loginExplainTextColor
                     )
                 }
             }
@@ -478,7 +506,7 @@ private fun SettingMenuItem(
                 text = ">",
                 fontFamily = fontFamily(),
                 fontSize = 18.sp,
-                color = Color(0xFF9CA3AF)
+                color = MyTheme.colors.secondaryColor.copy(alpha = 0.7f)
             )
         }
 
@@ -488,7 +516,7 @@ private fun SettingMenuItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(Color(0xFFF3F4F6))
+                    .background(MyTheme.colors.textWhiteColor.copy(alpha = 0.08f))
             )
         }
     }
@@ -505,7 +533,7 @@ private fun SelectionScreenContent(
             .fillMaxSize()
             .background(MyTheme.colors.mainBackgroundColor)
             .padding(innerPadding)
-            .padding(horizontal = 20.dp, vertical = 24.dp),
+            .padding(horizontal = 20.dp,),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
         DetailInfoCard(
@@ -516,7 +544,7 @@ private fun SelectionScreenContent(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            color = Color.White
+            color = MyTheme.colors.cardBgColor
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 content()
@@ -549,14 +577,14 @@ private fun SelectableOptionItem(
                     fontFamily = fontFamily(),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF111827)
+                    color = MyTheme.colors.textWhiteColor
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = subtitle,
                     fontFamily = fontFamily(),
                     fontSize = 13.sp,
-                    color = Color(0xFF6B7280)
+                    color = MyTheme.colors.loginExplainTextColor
                 )
             }
 
@@ -572,7 +600,7 @@ private fun SelectableOptionItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(Color(0xFFF3F4F6))
+                    .background(MyTheme.colors.textWhiteColor.copy(alpha = 0.08f))
             )
         }
     }
@@ -586,7 +614,7 @@ private fun DetailInfoCard(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        color = Color.White
+        color = MyTheme.colors.cardBgColor
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
@@ -596,14 +624,14 @@ private fun DetailInfoCard(
                 text = title,
                 fontFamily = fontFamily(),
                 fontSize = 13.sp,
-                color = Color(0xFF6B7280)
+                color = MyTheme.colors.loginExplainTextColor
             )
             Text(
                 text = body,
                 fontFamily = fontFamily(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF111827)
+                color = MyTheme.colors.textWhiteColor
             )
         }
     }
@@ -626,7 +654,7 @@ private fun PlaceholderDetailScreen(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            color = Color.White
+            color = MyTheme.colors.cardBgColor
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 28.dp),
@@ -638,14 +666,14 @@ private fun PlaceholderDetailScreen(
                     fontFamily = fontFamily(),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF111827),
+                    color = MyTheme.colors.textWhiteColor,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = description,
                     fontFamily = fontFamily(),
                     fontSize = 14.sp,
-                    color = Color(0xFF6B7280),
+                    color = MyTheme.colors.loginExplainTextColor,
                     textAlign = TextAlign.Center
                 )
             }
@@ -658,10 +686,12 @@ private fun ConfirmActionDialog(
     title: String,
     description: String,
     confirmText: String,
-    confirmColor: Color = Color(0xFF111827),
+    confirmColor: Color? = null,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
+    val resolvedConfirmColor = confirmColor ?: MyTheme.colors.dreamBtnColor
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -675,13 +705,13 @@ private fun ConfirmActionDialog(
             Text(
                 text = description,
                 fontFamily = fontFamily(),
-                color = Color(0xFF6B7280)
+                color = MyTheme.colors.loginExplainTextColor
             )
         },
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(containerColor = confirmColor)
+                colors = ButtonDefaults.buttonColors(containerColor = resolvedConfirmColor)
             ) {
                 Text(
                     text = confirmText,

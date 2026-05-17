@@ -73,6 +73,7 @@ import mydream.composeapp.generated.resources.calendar_delete_button
 import mydream.composeapp.generated.resources.calendar_delete_dialog_description
 import mydream.composeapp.generated.resources.calendar_delete_dialog_title
 import mydream.composeapp.generated.resources.calendar_delete_failed_message
+import mydream.composeapp.generated.resources.calendar_today_button
 import mydream.composeapp.generated.resources.common_cancel
 import mydream.composeapp.generated.resources.common_confirm
 import mydream.composeapp.generated.resources.common_notice
@@ -94,21 +95,13 @@ fun DreamCalendar(
     val dreamContentList = calendarViewModel.dreamContentList.collectAsState()
     val dreamDeleteState by calendarViewModel.dreamDeleteState.collectAsState()
 
-    var selectedDateDreamList = dreamContentList.value.filter { it.analysisDate == selectedDate.toString() }
+    val selectedDateDreamList = dreamContentList.value.filter { it.analysisDate == selectedDate.toString() }
+    val dreamMarkerMap = dreamContentList.value
+        .groupBy { it.analysisDate }
+        .mapValues { (_, dreams) -> dreams.resolveDreamMarker() }
 
     var selectedDreamAnalysis by remember { mutableStateOf<DreamAnalysisEntity?>(null) }
     var dreamPendingDelete by remember { mutableStateOf<DreamAnalysisEntity?>(null) }
-
-    var dreamContentMap = mutableMapOf<String, DreamAnalysisEntity>()
-
-    LaunchedEffect(dreamContentList) {
-        dreamContentList.value.forEach {
-
-            dreamContentMap[it.analysisDate] = it
-
-        }
-
-    }
 
     if (dreamPendingDelete != null) {
         AlertDialog(
@@ -216,22 +209,39 @@ fun DreamCalendar(
 
             Column(modifier = Modifier.background(color = MyTheme.colors.mainBackgroundColor)) {
 
-                Text(
-                    text = localDateToMonthText(selectedDate),
-                    color = MyTheme.colors.textWhiteColor,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp,
-                    fontFamily = fontFamily(),
-                    fontWeight = FontWeight.SemiBold
-                )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = localDateToMonthText(selectedDate),
+                        color = MyTheme.colors.textWhiteColor,
+                        modifier = Modifier.align(Alignment.Center),
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                        fontFamily = fontFamily(),
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    OutlinedButton(
+                        onClick = {
+                            selectedDate = LocalDate.now()
+                        },
+                        enabled = selectedDate != LocalDate.now(),
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.calendar_today_button),
+                            fontFamily = fontFamily(),
+                            fontSize = 13.sp
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 DrawCalendar(selectedDate, onClick = {
                     selectedDate = it.date
                 },
-                    dreamDateMap = dreamContentMap
+                    dreamMarkerMap = dreamMarkerMap
                     , onMonthScroll = {
 
                     selectedDate = if (it == LocalDate.now().yearMonth) LocalDate.now() else it.firstDay
@@ -371,9 +381,9 @@ private fun DreamAnalysisEntity.toDreamResponse(): DreamResponse {
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun DrawCalendar(
+private fun DrawCalendar(
     selectedDate: LocalDate,
-    dreamDateMap : MutableMap<String, DreamAnalysisEntity>,
+    dreamMarkerMap : Map<String, DreamMarker>,
     onClick: (CalendarDay) -> Unit,
     onMonthScroll: (YearMonth) -> Unit
 ) {
@@ -416,7 +426,7 @@ fun DrawCalendar(
             dayContent = { day ->
                 DrawDay(day, onClick = {
                     onClick(day)
-                }, selectedDate, dreamMarker = dreamDateMap[day.date.toString()]?.score?.toDreamMarker())
+                }, selectedDate, dreamMarker = dreamMarkerMap[day.date.toString()])
             },
             monthHeader = {
                 DaysOfWeekTitle(daysOfWeek)
@@ -436,6 +446,7 @@ private fun DrawDay(
     selectedDate: LocalDate,
     dreamMarker: DreamMarker?
 ) {
+    val dreamMarkerColor = dreamMarker?.color()
 
     Column(
         modifier = Modifier
@@ -448,15 +459,15 @@ private fun DrawDay(
         verticalArrangement = Arrangement.Center
     ) {
 
-        Box(
-            modifier = Modifier.background(
-                color = if (day.date == selectedDate) MyTheme.colors.calendarSelectedDateBgColor else Color.Unspecified,
-                if (day.date == selectedDate) CircleShape else ShapeDefaults.Small
-            ).size(24.dp),
+        if (day.position == DayPosition.MonthDate) {
+            Box(
+                modifier = Modifier.background(
+                    color = if (day.date == selectedDate) MyTheme.colors.calendarSelectedDateBgColor else Color.Unspecified,
+                    if (day.date == selectedDate) CircleShape else ShapeDefaults.Small
+                ).size(24.dp),
 
-            contentAlignment = Alignment.Center
-        ) {
-            if (day.position == DayPosition.MonthDate) {
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
                     text = day.date.day.toString(),
                     textAlign = TextAlign.Center,
@@ -466,31 +477,40 @@ private fun DrawDay(
                     fontFamily = fontFamily(),
                     modifier = Modifier.align(Alignment.Center)
                 )
+            }
 
-                dreamMarker?.let {
-                    Canvas(modifier = Modifier.align(Alignment.BottomCenter).size(2.dp)) {
+            Box(
+                modifier = Modifier.height(6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                dreamMarkerColor?.let {
+                    Canvas(modifier = Modifier.size(4.dp)) {
                         drawCircle(
-                            color = it.color,
-                            radius = 4.dp.value
+                            color = it,
+                            radius = size.minDimension / 2
                         )
                     }
-
-
                 }
-
             }
         }
-
-
     }
 
 
 }
 
-private enum class DreamMarker(val color: Color) {
-    GOOD(Color(0xFF3E7BFA)),
-    NORMAL(Color(0xFF111827)),
-    BAD(Color(0xFFE5484D))
+private enum class DreamMarker {
+    GOOD,
+    NORMAL,
+    BAD;
+
+    @Composable
+    fun color(): Color {
+        return when (this) {
+            GOOD -> MyTheme.colors.calendarGoodDreamMarkerColor
+            NORMAL -> MyTheme.colors.calendarNormalDreamMarkerColor
+            BAD -> MyTheme.colors.calendarBadDreamMarkerColor
+        }
+    }
 }
 
 private fun Int.toDreamMarker(): DreamMarker {
@@ -498,6 +518,15 @@ private fun Int.toDreamMarker(): DreamMarker {
         this >= 80 -> DreamMarker.GOOD
         this < 60 -> DreamMarker.BAD
         else -> DreamMarker.NORMAL
+    }
+}
+
+private fun List<DreamAnalysisEntity>.resolveDreamMarker(): DreamMarker {
+    val markers = map { it.score.toDreamMarker() }.toSet()
+    return if (markers.size >= 2) {
+        DreamMarker.GOOD
+    } else {
+        markers.first()
     }
 }
 

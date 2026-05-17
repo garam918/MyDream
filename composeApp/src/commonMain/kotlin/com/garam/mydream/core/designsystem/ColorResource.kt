@@ -25,6 +25,9 @@ data class MyColors(
     val dreamBtnColor: Color,
     val luckyItemCardBgColor : Color,
     val calendarSelectedDateBgColor : Color,
+    val calendarGoodDreamMarkerColor: Color,
+    val calendarNormalDreamMarkerColor: Color,
+    val calendarBadDreamMarkerColor: Color,
 )
 
 val LightColorPalette = MyColors(
@@ -42,6 +45,9 @@ val LightColorPalette = MyColors(
     dreamBtnColor = Color(0xFF0B0E20),
     luckyItemCardBgColor = Color(0xFFF9FAFB),
     calendarSelectedDateBgColor = Color(0xFF000000),
+    calendarGoodDreamMarkerColor = Color(0xFF3E7BFA),
+    calendarNormalDreamMarkerColor = Color.Black,
+    calendarBadDreamMarkerColor = Color(0xFFE5484D),
 )
 
 // 3. 다크 모드 색상
@@ -59,7 +65,10 @@ val DarkColorPalette = MyColors(
     cardBgColor = Color(0XFF1C2137),
     dreamBtnColor = Color(0xFFEBC77D),
     luckyItemCardBgColor = Color(0xFF0B0E20),
-    calendarSelectedDateBgColor = Color(0xFF6B4E96)
+    calendarSelectedDateBgColor = Color(0xFF6B4E96),
+    calendarGoodDreamMarkerColor = Color(0xFF8AB4FF),
+    calendarNormalDreamMarkerColor = Color(0xFFF5F5F7),
+    calendarBadDreamMarkerColor = Color(0xFFFF6B6B),
 )
 
 val LocalMyColors = staticCompositionLocalOf { LightColorPalette }

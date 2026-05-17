@@ -20,7 +20,21 @@ import org.jetbrains.compose.resources.ThemeQualifier
 
 enum class AppLanguage(val languageTag: String) {
     KOREAN("ko"),
-    ENGLISH("en")
+    ENGLISH("en");
+
+    companion object {
+        fun fromLanguageTag(languageTag: String?): AppLanguage {
+            val normalizedTag = languageTag
+                ?.replace('_', '-')
+                ?.lowercase()
+                ?: return ENGLISH
+
+            return entries.firstOrNull { language ->
+                normalizedTag == language.languageTag ||
+                    normalizedTag.startsWith("${language.languageTag}-")
+            } ?: ENGLISH
+        }
+    }
 }
 
 val LocalAppLanguage = staticCompositionLocalOf { AppLanguage.ENGLISH }

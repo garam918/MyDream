@@ -6,9 +6,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,20 +49,69 @@ import mydream.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private val ScreenBackground = Color(0xFFFDF9F4)
-private val CardBorder = Color(0xFFE5E7EB)
-private val CardShadow = Color(0x140B0E20)
-private val PrimaryText = Color(0xFF151A2D)
-private val SecondaryText = Color(0xFF6D748B)
-private val Purple = Color(0xFF6E54A3)
-private val PurpleSoft = Color(0xFFF2EBFF)
-private val Pink = Color(0xFFF7A3AF)
-private val Gold = Color(0xFFF0C261)
-private val BlueSoft = Color(0xFFF4F8FF)
-private val BlueBorder = Color(0xFFD3E3FF)
-private val RedSoft = Color(0xFFFFF6F5)
-private val RedBorder = Color(0xFFFFD9D4)
-private val GoldSoft = Color(0xFFFFF7E6)
+private data class DreamResultColors(
+    val screenBackground: Color,
+    val cardBackground: Color,
+    val nestedCardBackground: Color,
+    val cardBorder: Color,
+    val primaryText: Color,
+    val secondaryText: Color,
+    val purple: Color,
+    val purpleSoft: Color,
+    val pink: Color,
+    val gold: Color,
+    val blueSoft: Color,
+    val blueBorder: Color,
+    val redSoft: Color,
+    val redBorder: Color,
+    val energyTrack: Color,
+    val badgeBackground: Color
+)
+
+@Composable
+private fun dreamResultColors(): DreamResultColors {
+    val isDark = MyTheme.colors.mainBackgroundColor == Color(0xFF0B0E20)
+
+    return if (isDark) {
+        DreamResultColors(
+            screenBackground = MyTheme.colors.mainBackgroundColor,
+            cardBackground = Color(0xFF171C31),
+            nestedCardBackground = Color(0xFF202744),
+            cardBorder = Color(0xFF2B3455),
+            primaryText = MyTheme.colors.textWhiteColor,
+            secondaryText = Color(0xFFB8C1D9),
+            purple = Color(0xFFC8A5FF),
+            purpleSoft = Color(0xFF2B2144),
+            pink = Color(0xFFFF8FAA),
+            gold = MyTheme.colors.secondaryColor,
+            blueSoft = Color(0xFF142747),
+            blueBorder = Color(0xFF31588E),
+            redSoft = Color(0xFF3D2029),
+            redBorder = Color(0xFF7B3A44),
+            energyTrack = Color(0xFF29314E),
+            badgeBackground = Color(0xFF11162A)
+        )
+    } else {
+        DreamResultColors(
+            screenBackground = Color(0xFFFDF9F4),
+            cardBackground = Color.White,
+            nestedCardBackground = Color(0xFFFAFBFD),
+            cardBorder = Color(0xFFE5E7EB),
+            primaryText = Color(0xFF151A2D),
+            secondaryText = Color(0xFF6D748B),
+            purple = Color(0xFF6E54A3),
+            purpleSoft = Color(0xFFF2EBFF),
+            pink = Color(0xFFF7A3AF),
+            gold = Color(0xFFF0C261),
+            blueSoft = Color(0xFFF4F8FF),
+            blueBorder = Color(0xFFD3E3FF),
+            redSoft = Color(0xFFFFF6F5),
+            redBorder = Color(0xFFFFD9D4),
+            energyTrack = Color(0xFFF0F2F6),
+            badgeBackground = Color.White
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +119,8 @@ fun DreamInterpretation(
     dreamResponse: DreamResponse,
     onBackPressed: () -> Unit
 ) {
+    val colors = dreamResultColors()
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -77,7 +130,7 @@ fun DreamInterpretation(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = fontFamily(),
-                        color = PrimaryText
+                        color = colors.primaryText
                     )
                 },
                 navigationIcon = {
@@ -85,33 +138,33 @@ fun DreamInterpretation(
                         Icon(
                             painter = painterResource(Res.drawable.back_btn_icon),
                             contentDescription = stringResource(Res.string.common_back),
-                            tint = PrimaryText
+                            tint = colors.primaryText
                         )
                     }
                 },
                 colors = TopAppBarColors(
-                    containerColor = ScreenBackground,
-                    titleContentColor = PrimaryText,
-                    navigationIconContentColor = PrimaryText,
-                    actionIconContentColor = PrimaryText,
-                    scrolledContainerColor = ScreenBackground,
-                    subtitleContentColor = PrimaryText
+                    containerColor = colors.screenBackground,
+                    titleContentColor = colors.primaryText,
+                    navigationIconContentColor = colors.primaryText,
+                    actionIconContentColor = colors.primaryText,
+                    scrolledContainerColor = colors.screenBackground,
+                    subtitleContentColor = colors.primaryText
                 )
             )
         },
         contentWindowInsets = WindowInsets(0),
-        containerColor = ScreenBackground,
+        containerColor = colors.screenBackground,
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(ScreenBackground)
+                .background(colors.screenBackground)
                 .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             item {
-                HorizontalDivider(color = CardBorder.copy(alpha = 0.9f))
+                HorizontalDivider(color = colors.cardBorder.copy(alpha = 0.9f))
             }
 
             item {
@@ -145,6 +198,8 @@ fun DreamInterpretation(
 
 @Composable
 private fun AnalysisCard(dreamResponse: DreamResponse) {
+    val colors = dreamResultColors()
+
     SurfaceCard(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
@@ -157,12 +212,12 @@ private fun AnalysisCard(dreamResponse: DreamResponse) {
                     modifier = Modifier
                         .size(34.dp)
                         .clip(CircleShape)
-                        .background(PurpleSoft),
+                        .background(colors.purpleSoft),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "AI",
-                        color = Purple,
+                        color = colors.purple,
                         fontFamily = fontFamily(),
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 13.sp
@@ -171,7 +226,7 @@ private fun AnalysisCard(dreamResponse: DreamResponse) {
 
                 Text(
                     text = stringResource(Res.string.dream_interpretation_analysis_title),
-                    color = PrimaryText,
+                    color = colors.primaryText,
                     fontFamily = fontFamily(),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
@@ -182,7 +237,7 @@ private fun AnalysisCard(dreamResponse: DreamResponse) {
 
             Text(
                 text = dreamResponse.analysis.formatAnalysis(),
-                color = SecondaryText,
+                color = colors.secondaryText,
                 fontFamily = fontFamily(),
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
@@ -197,7 +252,7 @@ private fun AnalysisCard(dreamResponse: DreamResponse) {
             ) {
                 Text(
                     text = stringResource(Res.string.dream_interpretation_energy_negative),
-                    color = SecondaryText,
+                    color = colors.secondaryText,
                     fontFamily = fontFamily(),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp
@@ -209,7 +264,7 @@ private fun AnalysisCard(dreamResponse: DreamResponse) {
                         dreamResponse.energy_percent.coerceIn(0, 100)
                     ),
                     modifier = Modifier.weight(1f),
-                    color = Purple,
+                    color = colors.purple,
                     fontFamily = fontFamily(),
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
@@ -218,7 +273,7 @@ private fun AnalysisCard(dreamResponse: DreamResponse) {
 
                 Text(
                     text = stringResource(Res.string.dream_interpretation_energy_positive),
-                    color = SecondaryText,
+                    color = colors.secondaryText,
                     fontFamily = fontFamily(),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp
@@ -234,6 +289,8 @@ private fun AnalysisCard(dreamResponse: DreamResponse) {
 
 @Composable
 private fun ScoreCard(score: Int) {
+    val colors = dreamResultColors()
+
     SurfaceCard(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
@@ -246,7 +303,7 @@ private fun ScoreCard(score: Int) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(Res.string.dream_interpretation_fortune_score_title),
-                    color = SecondaryText,
+                    color = colors.secondaryText,
                     fontFamily = fontFamily(),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp
@@ -257,7 +314,7 @@ private fun ScoreCard(score: Int) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = "${score.coerceIn(0, 100)}",
-                        color = PrimaryText,
+                        color = colors.primaryText,
                         fontFamily = fontFamily(),
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 48.sp,
@@ -268,7 +325,7 @@ private fun ScoreCard(score: Int) {
 
                     Text(
                         text = stringResource(Res.string.dream_interpretation_score_unit),
-                        color = Gold,
+                        color = colors.gold,
                         fontFamily = fontFamily(),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,
@@ -280,7 +337,7 @@ private fun ScoreCard(score: Int) {
 
                 Text(
                     text = buildStars(score),
-                    color = Gold,
+                    color = colors.gold,
                     fontFamily = fontFamily(),
                     fontWeight = FontWeight.Medium,
                     fontSize = 18.sp,
@@ -295,11 +352,13 @@ private fun ScoreCard(score: Int) {
 
 @Composable
 private fun FortuneBadge() {
+    val colors = dreamResultColors()
+
     Box(
         modifier = Modifier
             .size(104.dp)
             .clip(CircleShape)
-            .background(Color.White),
+            .background(colors.badgeBackground),
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -310,10 +369,10 @@ private fun FortuneBadge() {
                     width = 6.dp,
                     brush = Brush.sweepGradient(
                         listOf(
-                            Gold.copy(alpha = 0.15f),
-                            Gold,
-                            Gold.copy(alpha = 0.15f),
-                            Gold
+                            colors.gold.copy(alpha = 0.15f),
+                            colors.gold,
+                            colors.gold.copy(alpha = 0.15f),
+                            colors.gold
                         )
                     ),
                     shape = CircleShape
@@ -322,7 +381,7 @@ private fun FortuneBadge() {
 
         Text(
             text = "✦",
-            color = Gold,
+            color = colors.gold,
             fontSize = 34.sp,
             fontWeight = FontWeight.Bold
         )
@@ -334,17 +393,22 @@ private fun InsightRow(
     goodPoints: List<String>,
     warnPoints: List<String>
 ) {
+    val colors = dreamResultColors()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(IntrinsicSize.Min)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         InsightCard(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
             title = stringResource(Res.string.dream_interpretation_expect_title),
-            background = BlueSoft,
-            border = BlueBorder,
+            background = colors.blueSoft,
+            border = colors.blueBorder,
             icon = "✦",
             iconColor = Color(0xFF4B83F5),
             bulletColor = Color(0xFF4B83F5),
@@ -357,10 +421,12 @@ private fun InsightRow(
         )
 
         InsightCard(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
             title = stringResource(Res.string.dream_interpretation_caution_title),
-            background = RedSoft,
-            border = RedBorder,
+            background = colors.redSoft,
+            border = colors.redBorder,
             icon = "!",
             iconColor = Color(0xFFF04D48),
             bulletColor = Color(0xFFF04D48),
@@ -385,6 +451,8 @@ private fun InsightCard(
     bulletColor: Color,
     points: List<String>
 ) {
+    val colors = dreamResultColors()
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(28.dp))
@@ -405,7 +473,7 @@ private fun InsightCard(
 
             Text(
                 text = title,
-                color = PrimaryText,
+                color = colors.primaryText,
                 fontFamily = fontFamily(),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp
@@ -429,7 +497,7 @@ private fun InsightCard(
 
                 Text(
                     text = point,
-                    color = SecondaryText,
+                    color = colors.secondaryText,
                     fontFamily = fontFamily(),
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
@@ -445,13 +513,15 @@ private fun LuckyItemCard(
     luckyItem: String,
     luckyColor: String
 ) {
+    val colors = dreamResultColors()
+
     SurfaceCard(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = stringResource(Res.string.dream_interpretation_lucky_item_title),
-                color = PrimaryText,
+                color = colors.primaryText,
                 fontFamily = fontFamily(),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp
@@ -488,17 +558,19 @@ private fun LuckyInfoBox(
     title: String,
     value: String
 ) {
+    val colors = dreamResultColors()
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(24.dp))
-            .background(Color(0xFFFAFBFD))
-            .border(BorderStroke(1.dp, CardBorder), RoundedCornerShape(24.dp))
+            .background(colors.nestedCardBackground)
+            .border(BorderStroke(1.dp, colors.cardBorder), RoundedCornerShape(24.dp))
             .padding(horizontal = 16.dp, vertical = 22.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = symbol,
-            color = Purple,
+            color = colors.purple,
             fontSize = 28.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -507,7 +579,7 @@ private fun LuckyInfoBox(
 
         Text(
             text = title,
-            color = SecondaryText,
+            color = colors.secondaryText,
             fontFamily = fontFamily(),
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
@@ -518,7 +590,7 @@ private fun LuckyInfoBox(
 
         Text(
             text = value,
-            color = PrimaryText,
+            color = colors.primaryText,
             fontFamily = fontFamily(),
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
@@ -529,6 +601,7 @@ private fun LuckyInfoBox(
 
 @Composable
 private fun EnergyBar(energyPercent: Int) {
+    val colors = dreamResultColors()
     val clamped = energyPercent.coerceIn(0, 100)
 
     Box(
@@ -542,7 +615,7 @@ private fun EnergyBar(energyPercent: Int) {
                 .fillMaxWidth()
                 .height(12.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFF0F2F6))
+                .background(colors.energyTrack)
         ) {
             Box(
                 modifier = Modifier
@@ -551,7 +624,7 @@ private fun EnergyBar(energyPercent: Int) {
                     .clip(CircleShape)
                     .background(
                         Brush.horizontalGradient(
-                            listOf(Pink, Color(0xFFC8A5FF), Purple)
+                            listOf(colors.pink, Color(0xFFC8A5FF), colors.purple)
                         )
                     )
             )
@@ -562,8 +635,8 @@ private fun EnergyBar(energyPercent: Int) {
                 .padding(start = ((clamped / 100f) * 260).dp)
                 .size(20.dp)
                 .clip(CircleShape)
-                .background(Color.White)
-                .border(BorderStroke(2.dp, Purple), CircleShape)
+                .background(colors.cardBackground)
+                .border(BorderStroke(2.dp, colors.purple), CircleShape)
         )
     }
 }
@@ -573,13 +646,15 @@ private fun SurfaceCard(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
+    val colors = dreamResultColors()
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(30.dp),
-        border = BorderStroke(1.dp, CardBorder),
+        border = BorderStroke(1.dp, colors.cardBorder),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White,
-            contentColor = PrimaryText
+            containerColor = colors.cardBackground,
+            contentColor = colors.primaryText
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
