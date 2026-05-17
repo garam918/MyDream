@@ -1,0 +1,16 @@
+platform :ios, '26.2'
+use_modular_headers!
+use_frameworks!
+
+target 'iosApp' do
+
+  pod 'FirebaseCore'
+  pod 'FirebaseAnalytics'
+  pod 'FirebaseCrashlytics'
+  pod 'FirebaseFirestore'
+
+  pod 'Google-Mobile-Ads-SDK'
+
+
+  pod 'ComposeApp', :path => '../composeApp'
+end

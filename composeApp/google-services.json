@@ -1,0 +1,70 @@
+{
+  "project_info": {
+    "project_number": "894671126399",
+    "project_id": "mydream-fa136",
+    "storage_bucket": "mydream-fa136.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894671126399:android:c2ec0ac60e0a67966d244a",
+        "android_client_info": {
+          "package_name": "com.garam.mydream"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "894671126399-4fvhoha6p7qoichv986l89980069oske.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.garam.mydream",
+            "certificate_hash": "d55982c22da827acb08071c98254618fb43f786b"
+          }
+        },
+        {
+          "client_id": "894671126399-87f0q1rscg2eodhd58c5fe8lvolqgrj1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.garam.mydream",
+            "certificate_hash": "14124763d76a3d5aa0788459dece05c24c4c4a7b"
+          }
+        },
+        {
+          "client_id": "894671126399-rui1ch9v9e3u4gicq2hmgvbm31ds4h4g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.garam.mydream",
+            "certificate_hash": "fb4ca1670c6ed509c6765e1788cd93e7ee7c6058"
+          }
+        },
+        {
+          "client_id": "894671126399-1i6nddeagqc6fgb3akhib0tcvehfmqcf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoSlOoplOMhLWa-U0n6JsrUyqK6o3Lyio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "894671126399-1i6nddeagqc6fgb3akhib0tcvehfmqcf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "894671126399-uvnm9ohhvgg92lahjlqp6i5ttojo9ma9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.garam.mydream"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
