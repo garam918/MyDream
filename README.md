@@ -120,3 +120,7 @@ Room DAO / Ktor API / Firebase DataSource
 - ViewModel은 Repository를 통해 데이터 소스에 접근합니다.
 - 꿈 해몽 기록은 Room에 먼저 저장하고 Firestore에 백업합니다.
 - Android/iOS 플랫폼 기능은 `expect/actual` 또는 플랫폼별 source set으로 분리합니다.
+
+
+## 앱 스토어 링크
+https://apps.apple.com/kr/app/mydream-ai-%EA%BF%88%ED%95%B4%EB%AA%BD/id6762837084
