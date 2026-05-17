@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ApiRequest(
-    val content: String
+    val content: String,
+    val language: String
 )
 
 

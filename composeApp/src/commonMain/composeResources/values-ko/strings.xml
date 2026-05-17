@@ -22,7 +22,7 @@
 
     <string name="bottom_menu_today_dream_title_text">오늘의 꿈</string>
     <string name="bottom_menu_dream_calendar_title_text">꿈 달력</string>
-    <string name="bottom_menu_today_tarot_title_text">오늘의 타로</string>
+    <string name="bottom_menu_today_tarot_title_text">오늘의 운세</string>
     <string name="bottom_menu_insight_title_text">인사이트</string>
     <string name="bottom_menu_my_info_title_text">내 정보</string>
 
@@ -51,6 +51,7 @@
 
     <string name="calendar_good_dream_label">길몽</string>
     <string name="calendar_bad_dream_label">흉몽</string>
+    <string name="calendar_today_button">오늘</string>
     <string name="calendar_delete_button">삭제</string>
     <string name="calendar_delete_dialog_title">이 꿈 기록을 삭제할까요?</string>
     <string name="calendar_delete_dialog_description">선택한 꿈 해몽 기록은 기기와 클라우드 백업에서 모두 삭제됩니다.</string>
@@ -85,6 +86,8 @@
     <string name="setting_notification_menu_subtitle">푸시 알림을 받고 싶은 시간을 설정해요</string>
     <string name="setting_subscription_menu_title">구독 관리</string>
     <string name="setting_subscription_menu_subtitle">이용 중인 구독 상태를 확인하고 관리해요</string>
+    <string name="setting_feedback_title">피드백 보내기</string>
+    <string name="setting_feedback_subtitle">불편한 점이나 개선 의견을 구글폼으로 보내주세요</string>
     <string name="setting_terms_of_service_title">이용약관</string>
     <string name="setting_privacy_policy_title">개인정보처리방침</string>
     <string name="setting_current_selection_format">현재 선택: %1$s</string>
@@ -109,15 +112,16 @@
     <string name="setting_subscription_placeholder_title">구독 상태를 관리하는 화면</string>
     <string name="setting_subscription_placeholder_description">현재 구독 플랜, 결제 상태, 복원 기능 등을 연결하기 좋은 자리입니다.</string>
 
-    <string name="today_tarot_title">오늘의 무의식 메세지</string>
-    <string name="today_tarot_subtitle_before_selection">직관적으로 끌리는 카드 한 장을 선택하세요</string>
-    <string name="today_tarot_subtitle_after_selection">당신의 무의식이 선택한 결과입니다</string>
-    <string name="today_tarot_card_fool_name">바보 (The Fool)</string>
-    <string name="today_tarot_card_fool_description">새로운 시작을 의미합니다. 오늘은 계산하지 말고 마음이 이끄는 대로 가볍게 시도해 보세요.</string>
-    <string name="today_tarot_card_magician_name">마법사 (The Magician)</string>
-    <string name="today_tarot_card_magician_description">당신 안에는 이미 모든 능력이 갖춰져 있습니다. 자신감을 가지고 무언가를 시작하기 좋은 날입니다.</string>
-    <string name="today_tarot_card_priestess_name">고위 여사제 (The High Priestess)</string>
-    <string name="today_tarot_card_priestess_description">직관이 매우 날카로운 날입니다. 겉으로 드러난 것보다 내면의 목소리에 귀를 기울이세요.</string>
-    <string name="today_tarot_card_world_name">세계 (The World)</string>
-    <string name="today_tarot_card_world_description">하나의 챕터가 성공적으로 마무리되는 완벽한 하루입니다. 성취감을 만끽하세요.</string>
+    <string name="today_fortune_title">오늘의 운세</string>
+    <string name="today_fortune_subtitle">%1$s 의 운세예요.</string>
+    <string name="today_fortune_loading">오늘의 운세를 불러오는 중이에요.</string>
+    <string name="today_fortune_error_default">오늘의 운세를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</string>
+    <string name="today_fortune_retry">다시 시도</string>
+    <string name="today_fortune_score_label">점</string>
+    <string name="today_fortune_item_section">행운의 아이템</string>
+    <string name="today_fortune_item_button">쿠팡에서 보기</string>
+    <string name="today_fortune_empty_items">추천할 행운 아이템이 아직 없어요.</string>
+    <string name="today_fortune_lucky_number">행운의 숫자</string>
+    <string name="today_fortune_lucky_item">행운의 물건</string>
+    <string name="today_fortune_lucky_color">행운의 색상</string>
 </resources>

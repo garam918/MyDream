@@ -21,7 +21,7 @@
 
     <string name="bottom_menu_today_dream_title_text">Today’s Dream</string>
     <string name="bottom_menu_dream_calendar_title_text">Dream Calendar</string>
-    <string name="bottom_menu_today_tarot_title_text">Today’s Tarot</string>
+    <string name="bottom_menu_today_tarot_title_text">Today’s Fortune</string>
     <string name="bottom_menu_insight_title_text">Insight</string>
     <string name="bottom_menu_my_info_title_text">My Info</string>
 
@@ -49,6 +49,7 @@
 
     <string name="calendar_good_dream_label">Good Dream</string>
     <string name="calendar_bad_dream_label">Bad Dream</string>
+    <string name="calendar_today_button">Today</string>
     <string name="calendar_delete_button">Delete</string>
     <string name="calendar_delete_dialog_title">Delete this dream record?</string>
     <string name="calendar_delete_dialog_description">The selected dream analysis will be removed from both your device and cloud backup.</string>
@@ -83,6 +84,8 @@
     <string name="setting_notification_menu_subtitle">Choose when you want to receive push notifications</string>
     <string name="setting_subscription_menu_title">Subscription</string>
     <string name="setting_subscription_menu_subtitle">Check and manage your current subscription status</string>
+    <string name="setting_feedback_title">Send Feedback</string>
+    <string name="setting_feedback_subtitle">Share bugs, inconveniences, or ideas through Google Forms</string>
     <string name="setting_terms_of_service_title">Terms of Service</string>
     <string name="setting_privacy_policy_title">Privacy Policy</string>
     <string name="setting_current_selection_format">Current selection: %1$s</string>
@@ -107,15 +110,16 @@
     <string name="setting_subscription_placeholder_title">Subscription management</string>
     <string name="setting_subscription_placeholder_description">This is a good place to connect the current plan, billing status, and restore purchases.</string>
 
-    <string name="today_tarot_title">Today’s Unconscious Message</string>
-    <string name="today_tarot_subtitle_before_selection">Choose the one card you feel intuitively drawn to.</string>
-    <string name="today_tarot_subtitle_after_selection">This is the result your unconscious selected for you.</string>
-    <string name="today_tarot_card_fool_name">The Fool</string>
-    <string name="today_tarot_card_fool_description">It represents a new beginning. Today, don’t overcalculate. Follow what your heart naturally wants to try.</string>
-    <string name="today_tarot_card_magician_name">The Magician</string>
-    <string name="today_tarot_card_magician_description">You already have everything you need within you. It’s a great day to begin something with confidence.</string>
-    <string name="today_tarot_card_priestess_name">The High Priestess</string>
-    <string name="today_tarot_card_priestess_description">Your intuition is especially sharp today. Listen to your inner voice more than what appears on the surface.</string>
-    <string name="today_tarot_card_world_name">The World</string>
-    <string name="today_tarot_card_world_description">A chapter is successfully coming to completion. Enjoy the sense of accomplishment that comes with it.</string>
+    <string name="today_fortune_title">Today’s Fortune</string>
+    <string name="today_fortune_subtitle">Generated once for %1$s and then shown from the app.</string>
+    <string name="today_fortune_loading">Loading today’s fortune.</string>
+    <string name="today_fortune_error_default">Couldn’t load today’s fortune. Please try again in a moment.</string>
+    <string name="today_fortune_retry">Try Again</string>
+    <string name="today_fortune_score_label"> pts</string>
+    <string name="today_fortune_item_section">Lucky Items</string>
+    <string name="today_fortune_item_button">View on Coupang</string>
+    <string name="today_fortune_empty_items">There are no lucky item recommendations yet.</string>
+    <string name="today_fortune_lucky_number">Lucky Number</string>
+    <string name="today_fortune_lucky_item">Lucky Item</string>
+    <string name="today_fortune_lucky_color">Lucky Color</string>
 </resources>

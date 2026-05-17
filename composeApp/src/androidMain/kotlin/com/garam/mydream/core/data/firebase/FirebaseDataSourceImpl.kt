@@ -20,7 +20,7 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
         val uid = currentUser?.uid.toString()
 
         firestore.collection(userCollectionPath)
-            .document(uid).set(userDataEntity)
+            .document(uid).set(userDataEntity).await()
     }
 
     override suspend fun saveDreamData(dreamData: DreamAnalysisEntity) {
@@ -33,6 +33,7 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
             .collection(dreamContentCollectionPath)
             .document(dreamData.id)
             .set(dreamData.copy(uid = uid))
+            .await()
 
     }
 
@@ -41,7 +42,7 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
         val uid = currentUser?.uid.toString()
 
         firestore.collection(userCollectionPath)
-            .document(uid).collection(dreamReportCollectionPath).document(dreamReportEntity.id).set(dreamReportEntity)
+            .document(uid).collection(dreamReportCollectionPath).document(dreamReportEntity.id).set(dreamReportEntity).await()
 
     }
 
@@ -72,6 +73,6 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
 
         firestore.collection(userCollectionPath).document(uid)
             .collection(dreamContentCollectionPath)
-            .document(id).delete()
+            .document(id).delete().await()
     }
 }

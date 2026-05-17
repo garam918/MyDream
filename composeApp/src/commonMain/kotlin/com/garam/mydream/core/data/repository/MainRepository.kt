@@ -1,7 +1,9 @@
 package com.garam.mydream.core.data.repository
 
 import com.garam.mydream.core.database.DreamAnalysisEntity
+import com.garam.mydream.core.database.TodayFortuneEntity
 import com.garam.mydream.core.network.DreamResponse
+import com.garam.mydream.core.network.TodayFortuneResponse
 import kotlinx.coroutines.flow.Flow
 
 interface MainRepository {
@@ -22,5 +24,11 @@ interface MainRepository {
     suspend fun getMonthlyDreamAnalysis() : List<DreamResponse>
 
     suspend fun saveMonthlyDreamReport()
+
+    suspend fun getTodayFortune(fortuneDate: String): TodayFortuneEntity?
+
+    suspend fun fetchTodayFortune(fortuneDate: String): Result<TodayFortuneResponse>
+
+    suspend fun saveTodayFortune(todayFortuneEntity: TodayFortuneEntity)
 
 }

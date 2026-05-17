@@ -109,17 +109,16 @@ class AuthRepositoryImpl : AuthRepository {
     override suspend fun currentUser(): UserDataEntity? {
         val user = Firebase.auth.currentUser
 
-        return if(user == null) null
-        else {
-            if(user?.isAnonymous == true) {
-                UserDataEntity(uid = user.uid, email = user.email, loginType = "anonymous", paid = false)
-            }
-            else {
-                Firebase.firestore.collection("Users").document(user.uid)
-                    .get().await().toObject(UserDataEntity::class.java)
-            }
+        return if (user == null) {
+            null
+        } else if (user.isAnonymous) {
+            UserDataEntity(uid = user.uid, email = user.email, loginType = "anonymous", paid = false)
+        } else {
+            val storedUser = Firebase.firestore.collection("Users").document(user.uid)
+                .get().await()
+                .toObject(UserDataEntity::class.java)
 
-
+            buildResolvedUser(user, storedUser)
         }
 
 //        val loginType = if(user?.isAnonymous == true) "anonymous"
@@ -140,5 +139,35 @@ class AuthRepositoryImpl : AuthRepository {
                 "usageCount", userInfo.usageCount,
                 "rewardedChanceUsed", userInfo.rewardedChanceUsed
             )
+    }
+
+    private fun buildResolvedUser(user: FirebaseUser, storedUser: UserDataEntity?): UserDataEntity {
+        val resolvedLoginType = storedUser?.loginType
+            ?.takeUnless { it.isBlank() || it == "anonymous" }
+            ?: resolveLoginType(user)
+
+        val resolvedEmail = storedUser?.email
+            ?.takeUnless { it.isBlank() || it == "Guest" }
+            ?: user.email
+            ?: user.providerData.firstOrNull { !it.email.isNullOrBlank() }?.email
+
+        return UserDataEntity(
+            uid = user.uid,
+            email = resolvedEmail,
+            loginType = resolvedLoginType,
+            usageCount = storedUser?.usageCount ?: 2,
+            rewardedChanceUsed = storedUser?.rewardedChanceUsed ?: false,
+            paid = storedUser?.paid ?: false,
+            lastUseDate = storedUser?.lastUseDate ?: UserDataEntity().lastUseDate
+        )
+    }
+
+    private fun resolveLoginType(user: FirebaseUser): String {
+        return when {
+            user.isAnonymous -> "anonymous"
+            user.providerData.any { it.providerId == "google.com" } -> "google"
+            user.providerData.any { it.providerId == "apple.com" } -> "apple"
+            else -> ""
+        }
     }
 }

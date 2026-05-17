@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
-    "identityHash": "eb07b0443345988c1791d708beb2aab9",
+    "version": 2,
+    "identityHash": "e19b792f4a58c893e267aa5e41944032",
     "entities": [
       {
         "tableName": "dream_analysis_table",
@@ -142,66 +142,11 @@
             "uid"
           ]
         }
-      },
-      {
-        "tableName": "today_fortune_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `fortuneDate` TEXT NOT NULL, `title` TEXT NOT NULL, `summary` TEXT NOT NULL, `score` INTEGER NOT NULL, `luckyItems` TEXT NOT NULL, `generatedAt` TEXT NOT NULL, PRIMARY KEY(`uid`, `fortuneDate`))",
-        "fields": [
-          {
-            "fieldPath": "uid",
-            "columnName": "uid",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fortuneDate",
-            "columnName": "fortuneDate",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "title",
-            "columnName": "title",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "summary",
-            "columnName": "summary",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "score",
-            "columnName": "score",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "luckyItems",
-            "columnName": "luckyItems",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "generatedAt",
-            "columnName": "generatedAt",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "uid",
-            "fortuneDate"
-          ]
-        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eb07b0443345988c1791d708beb2aab9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e19b792f4a58c893e267aa5e41944032')"
     ]
   }
 }

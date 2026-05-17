@@ -25,27 +25,12 @@ class LoginViewModel(
     }
 
     suspend fun completeSocialLogin(userData: UserDataEntity): Boolean {
-        val isExistingAccount = authRepository.isExistAccount(userData.uid)
-
-        return if (isExistingAccount) {
-            syncExistingAccount(userData)
-        } else {
-            createNewAccount(userData)
-        }
-    }
-
-    private suspend fun createNewAccount(userData: UserDataEntity): Boolean {
-        userDao.upsertUserData(userData)
-        firebaseRepo.setUserData(userData)
-        return true
-    }
-
-    private suspend fun syncExistingAccount(userData: UserDataEntity): Boolean {
         val currentUser = runCatching { authRepository.currentUser() }.getOrNull()
         val syncedUser = currentUser ?: userData
         val dreamAnalysisList = runCatching { firebaseRepo.getDreamData() }.getOrDefault(emptyList())
 
         userDao.upsertUserData(syncedUser)
+        firebaseRepo.setUserData(syncedUser)
 
         if (dreamAnalysisList.isNotEmpty()) {
             dreamAnalysisDao.saveDreamAnalysisList(dreamAnalysisList)
@@ -53,5 +38,4 @@ class LoginViewModel(
 
         return true
     }
-
 }

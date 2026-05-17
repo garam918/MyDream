@@ -56,7 +56,7 @@ import com.garam.mydream.feature.setting.NotificationTimeSettingScreen
 import com.garam.mydream.feature.setting.SettingScreen
 import com.garam.mydream.feature.setting.SubscriptionManagementScreen
 import com.garam.mydream.feature.setting.ThemeSettingScreen
-import com.garam.mydream.feature.todayTarot.TodayTarotScreen
+import com.garam.mydream.feature.todayFortune.TodayFortuneScreen
 import mydream.composeapp.generated.resources.Res
 import mydream.composeapp.generated.resources.bottom_menu_dream_calendar_title_text
 import mydream.composeapp.generated.resources.bottom_menu_insight_title_text
@@ -93,7 +93,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
     val initialLanguageName = remember(appSettingsStorage) {
         enumValueOrDefault<AppLanguage>(
             value = appSettingsStorage.getLanguageName(),
-            defaultValue = AppLanguage.ENGLISH.name
+            defaultValue = appSettingsStorage.getSystemLanguageName()
         )
     }
     val initialThemeModeName = remember(appSettingsStorage) {
@@ -157,6 +157,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
             // 온보딩 (로그인) 화면
             composable(Routes.ONBOARDING) {
                 OnboardingScreen(onLoginSuccess = {
+                    mainViewModel.refreshCurrentUser()
                     // 로그인 성공 시 홈으로 이동하며 백스택 비우기
                     navController.navigate(Routes.HOME) {
                         popUpTo(Routes.ONBOARDING) { inclusive = true }
@@ -387,7 +388,7 @@ fun HomeBottomNavigation(
                 1 -> DreamCalendar(
                     onNavigateToDreamInterpretation = onNavigateToDreamInterpretation
                 )
-                2 -> TodayTarotScreen()
+                2 -> TodayFortuneScreen()
 //                2 -> Report()
 //                3 -> MyPage()
             }
