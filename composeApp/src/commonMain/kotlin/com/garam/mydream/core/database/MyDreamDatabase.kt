@@ -12,10 +12,18 @@ import kotlinx.coroutines.IO
 
 
 @Database(
-    entities = [DreamAnalysisEntity::class, UserDataEntity::class, TodayFortuneEntity::class],
-    version = 3,
+    entities = [
+        DreamAnalysisEntity::class,
+        UserDataEntity::class,
+        TodayFortuneEntity::class,
+        DreamReportEntity::class
+    ],
+    version = 4,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 2, to = 3)]
+    autoMigrations = [
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4)
+    ]
 )
 @ConstructedBy(MyDreamDatabaseConstructor::class)
 @TypeConverters(DreamTypeConverter::class)
@@ -26,6 +34,8 @@ abstract class MyDreamDatabase : RoomDatabase() {
     abstract fun userDataDao(): UserDataDao
 
     abstract fun todayFortuneDao(): TodayFortuneDao
+
+    abstract fun dreamReportDao(): DreamReportDao
 
 }
 
