@@ -22,8 +22,24 @@
     <string name="bottom_menu_today_dream_title_text">Today’s Dream</string>
     <string name="bottom_menu_dream_calendar_title_text">Dream Calendar</string>
     <string name="bottom_menu_today_tarot_title_text">Today’s Fortune</string>
-    <string name="bottom_menu_insight_title_text">Insight</string>
+    <string name="bottom_menu_insight_title_text">Report</string>
     <string name="bottom_menu_my_info_title_text">My Info</string>
+
+    <string name="report_weekly">Weekly</string>
+    <string name="report_monthly">Monthly</string>
+    <string name="report_score_graph">Fortune Score</string>
+    <string name="report_ratio">Good / Bad Dream Ratio</string>
+    <string name="report_good_dream">Good Dreams</string>
+    <string name="report_bad_dream">Bad Dreams</string>
+    <string name="report_dream_count">Based on %1$d dream(s)</string>
+    <string name="report_lucky_color">Frequent Lucky Colors</string>
+    <string name="report_lucky_item">Frequent Lucky Items</string>
+    <string name="report_color">Color</string>
+    <string name="report_item">Item</string>
+    <string name="report_count">Count</string>
+    <string name="report_empty">There are no dream records for this period yet.</string>
+    <string name="report_error">Couldn’t load the report.</string>
+    <string name="report_retry">Try Again</string>
 
     <string name="dream_record_title_text">What kind of dream did you have?</string>
     <string name="dream_record_explain_text">Write it down before it fades.</string>

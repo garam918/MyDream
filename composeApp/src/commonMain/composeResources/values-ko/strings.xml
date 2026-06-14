@@ -23,8 +23,24 @@
     <string name="bottom_menu_today_dream_title_text">오늘의 꿈</string>
     <string name="bottom_menu_dream_calendar_title_text">꿈 달력</string>
     <string name="bottom_menu_today_tarot_title_text">오늘의 운세</string>
-    <string name="bottom_menu_insight_title_text">인사이트</string>
+    <string name="bottom_menu_insight_title_text">리포트</string>
     <string name="bottom_menu_my_info_title_text">내 정보</string>
+
+    <string name="report_weekly">주간</string>
+    <string name="report_monthly">월간</string>
+    <string name="report_score_graph">운세 점수</string>
+    <string name="report_ratio">길몽 / 흉몽 비율</string>
+    <string name="report_good_dream">길몽</string>
+    <string name="report_bad_dream">흉몽</string>
+    <string name="report_dream_count">꿈 기록 %1$d개 기준</string>
+    <string name="report_lucky_color">자주 나온 행운의 색상</string>
+    <string name="report_lucky_item">자주 나온 행운의 물건</string>
+    <string name="report_color">색상</string>
+    <string name="report_item">물건</string>
+    <string name="report_count">횟수</string>
+    <string name="report_empty">이 기간에는 아직 꿈 기록이 없어요.</string>
+    <string name="report_error">리포트를 불러오지 못했어요.</string>
+    <string name="report_retry">다시 시도</string>
 
 
     <string name="dream_record_title_text">어떤 꿈을 꾸셨나요?</string>

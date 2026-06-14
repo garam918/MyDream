@@ -57,6 +57,7 @@ import com.garam.mydream.feature.setting.SettingScreen
 import com.garam.mydream.feature.setting.SubscriptionManagementScreen
 import com.garam.mydream.feature.setting.ThemeSettingScreen
 import com.garam.mydream.feature.todayFortune.TodayFortuneScreen
+import com.garam.mydream.feature.report.Report
 import mydream.composeapp.generated.resources.Res
 import mydream.composeapp.generated.resources.bottom_menu_dream_calendar_title_text
 import mydream.composeapp.generated.resources.bottom_menu_insight_title_text
@@ -309,8 +310,8 @@ fun HomeBottomNavigation(
     val navItems = listOf(
         BottomNavItem(stringResource(Res.string.bottom_menu_today_dream_title_text)),
         BottomNavItem(stringResource(Res.string.bottom_menu_dream_calendar_title_text)),
+        BottomNavItem(stringResource(Res.string.bottom_menu_insight_title_text)),
         BottomNavItem(stringResource(Res.string.bottom_menu_today_tarot_title_text)),
-//        BottomNavItem(stringResource(Res.string.bottom_menu_insight_title_text)),
 //        BottomNavItem(stringResource(Res.string.bottom_menu_my_info_title_text))
     )
 
@@ -388,8 +389,8 @@ fun HomeBottomNavigation(
                 1 -> DreamCalendar(
                     onNavigateToDreamInterpretation = onNavigateToDreamInterpretation
                 )
-                2 -> TodayFortuneScreen()
-//                2 -> Report()
+                2 -> Report()
+                3 -> TodayFortuneScreen()
 //                3 -> MyPage()
             }
         }

@@ -4,7 +4,6 @@ import cocoapods.FirebaseAuth.FIRAuth
 import cocoapods.FirebaseFirestoreInternal.FIRFirestore
 import cocoapods.FirebaseFirestoreInternal.FIRQueryDocumentSnapshot
 import com.garam.mydream.core.database.DreamAnalysisEntity
-import com.garam.mydream.core.database.DreamReportEntity
 import com.garam.mydream.core.database.UserDataEntity
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -19,7 +18,6 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
     private val firestore = FIRFirestore.firestore()
     private val userCollectionPath = "Users"
     private val dreamContentCollectionPath = "DreamContent"
-    private val dreamReportCollectionPath = "DreamReport"
 
     override suspend fun setUserData(userDataEntity: UserDataEntity) {
         val uid = FIRAuth.auth().currentUser()?.uid() ?: return
@@ -37,16 +35,6 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
             .collectionWithPath(dreamContentCollectionPath)
             .documentWithPath(dreamData.id)
             .setDataAwait(dreamData.copy(uid = uid).toFirestoreMap())
-    }
-
-    override suspend fun saveDreamReportData(dreamReportEntity: DreamReportEntity) {
-        val uid = FIRAuth.auth().currentUser()?.uid() ?: return
-
-        firestore.collectionWithPath(userCollectionPath)
-            .documentWithPath(uid)
-            .collectionWithPath(dreamReportCollectionPath)
-            .documentWithPath(dreamReportEntity.id)
-            .setDataAwait(dreamReportEntity.toFirestoreMap())
     }
 
     override suspend fun getDreamData(): List<DreamAnalysisEntity> {
@@ -67,31 +55,6 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
                         ?.mapNotNull { document ->
                             val data = (document as? FIRQueryDocumentSnapshot)?.data()
                             data?.toDreamAnalysisEntity()
-                        }
-                        .orEmpty()
-
-                    continuation.resume(entities)
-                }
-        }
-    }
-
-    override suspend fun getDreamReportData(): List<DreamReportEntity> {
-        val uid = FIRAuth.auth().currentUser()?.uid() ?: return emptyList()
-
-        return suspendCancellableCoroutine { continuation ->
-            firestore.collectionWithPath(userCollectionPath)
-                .documentWithPath(uid)
-                .collectionWithPath(dreamReportCollectionPath)
-                .getDocumentsWithCompletion { snapshot, error ->
-                    if (error != null) {
-                        continuation.resumeWithException(error.toException())
-                        return@getDocumentsWithCompletion
-                    }
-
-                    val entities = snapshot?.documents
-                        ?.mapNotNull { document ->
-                            val data = (document as? FIRQueryDocumentSnapshot)?.data()
-                            data?.toDreamReportEntity()
                         }
                         .orEmpty()
 
@@ -157,11 +120,6 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
         "analysisDate" to analysisDate
     )
 
-    private fun DreamReportEntity.toFirestoreMap(): Map<Any?, Any?> = mapOf(
-        "id" to id,
-        "savedTime" to savedTime
-    )
-
     private fun Map<Any?, *>.toDreamAnalysisEntity(): DreamAnalysisEntity? {
         val id = stringValue("id") ?: return null
         val uid = stringValue("uid") ?: ""
@@ -187,16 +145,6 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
             lucky_item = luckyItem,
             lucky_color = luckyColor,
             analysisDate = analysisDate
-        )
-    }
-
-    private fun Map<Any?, *>.toDreamReportEntity(): DreamReportEntity? {
-        val id = stringValue("id") ?: return null
-        val savedTime = longValue("savedTime") ?: return null
-
-        return DreamReportEntity(
-            id = id,
-            savedTime = savedTime
         )
     }
 

@@ -1,14 +1,17 @@
 package com.garam.mydream.core.database
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "dream_report_table")
+@Entity(
+    tableName = "dream_report_table",
+    primaryKeys = ["uid", "reportType", "periodStart"]
+)
 data class DreamReportEntity(
-
-    @PrimaryKey
-    val id: String,
-    val savedTime : Long,
-
-
+    val uid: String,
+    val reportType: String,
+    val periodStart: String,
+    val periodEnd: String,
+    val sourceFingerprint: String,
+    val payload: String,
+    val savedTime: Long
 )

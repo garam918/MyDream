@@ -6,6 +6,10 @@ import com.garam.mydream.core.database.DreamAnalysisDao
 import com.garam.mydream.core.database.DreamAnalysisEntity
 import com.garam.mydream.core.database.TodayFortuneDao
 import com.garam.mydream.core.database.TodayFortuneEntity
+import com.garam.mydream.core.database.DreamReportDao
+import com.garam.mydream.core.database.DreamReportEntity
+import com.garam.mydream.core.data.model.DreamReport
+import com.garam.mydream.core.data.model.ReportType
 import com.garam.mydream.core.localization.AppLanguage
 import com.garam.mydream.core.network.ApiRequest
 import com.garam.mydream.core.network.ApiService
@@ -15,12 +19,20 @@ import com.garam.mydream.core.network.TodayFortuneResponse
 import com.garam.mydream.core.settings.AppSettingsStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class MainRepositoryImpl(
 
     private val apiService: ApiService,
     private val dreamAnalysisDao: DreamAnalysisDao,
     private val todayFortuneDao: TodayFortuneDao,
+    private val dreamReportDao: DreamReportDao,
     private val firebaseDataSource: FirebaseDataSource,
     private val authRepository: AuthRepository,
     private val appSettingsStorage: AppSettingsStorage
@@ -60,20 +72,41 @@ class MainRepositoryImpl(
         dreamAnalysisDao.deleteDreamAnalysis(id = id, uid = uid)
     }
 
-    override suspend fun getWeeklyDreamAnalysis(): List<DreamResponse> {
-        TODO("Not yet implemented")
-    }
+    @OptIn(ExperimentalTime::class)
+    override suspend fun getDreamReport(reportType: ReportType): DreamReport? {
+        val uid = authRepository.currentUser()?.uid ?: return null
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+        val (periodStart, periodEnd) = reportPeriod(reportType, today)
+        val dreams = dreamAnalysisDao.getDreamAnalysisBetween(
+            uid = uid,
+            startDate = periodStart.toString(),
+            endDate = periodEnd.toString()
+        )
+        val fingerprint = DreamReportAnalyzer.sourceFingerprint(dreams)
+        val cached = dreamReportDao.getDreamReport(
+            uid = uid,
+            reportType = reportType.name,
+            periodStart = periodStart.toString()
+        )
 
-    override suspend fun saveWeeklyDreamReport() {
-        TODO("Not yet implemented")
-    }
+        if (cached?.sourceFingerprint == fingerprint) {
+            return runCatching { reportJson.decodeFromString<DreamReport>(cached.payload) }
+                .getOrNull()
+        }
 
-    override suspend fun getMonthlyDreamAnalysis(): List<DreamResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun saveMonthlyDreamReport() {
-        TODO("Not yet implemented")
+        val report = DreamReportAnalyzer.analyze(reportType, periodStart, periodEnd, dreams)
+        dreamReportDao.saveDreamReport(
+            DreamReportEntity(
+                uid = uid,
+                reportType = reportType.name,
+                periodStart = periodStart.toString(),
+                periodEnd = periodEnd.toString(),
+                sourceFingerprint = fingerprint,
+                payload = reportJson.encodeToString(report),
+                savedTime = Clock.System.now().toEpochMilliseconds()
+            )
+        )
+        return report
     }
 
     override suspend fun getTodayFortune(fortuneDate: String): TodayFortuneEntity? {
@@ -105,5 +138,29 @@ class MainRepositoryImpl(
         val language = AppLanguage.entries.firstOrNull { it.name == languageName }
             ?: AppLanguage.ENGLISH
         return language.languageTag
+    }
+
+    private fun reportPeriod(type: ReportType, today: LocalDate): Pair<LocalDate, LocalDate> {
+        return when (type) {
+            ReportType.WEEKLY -> {
+                val start = LocalDate.fromEpochDays(today.toEpochDays() - today.dayOfWeek.ordinal)
+                start to LocalDate.fromEpochDays(start.toEpochDays() + 6)
+            }
+            ReportType.MONTHLY -> {
+                val start = LocalDate(today.year, today.month, 1)
+                val end = LocalDate(today.year, today.month, daysInMonth(today.year, today.month.ordinal + 1))
+                start to end
+            }
+        }
+    }
+
+    private fun daysInMonth(year: Int, month: Int): Int = when (month) {
+        2 -> if (year % 400 == 0 || year % 4 == 0 && year % 100 != 0) 29 else 28
+        4, 6, 9, 11 -> 30
+        else -> 31
+    }
+
+    private companion object {
+        val reportJson = Json { ignoreUnknownKeys = true }
     }
 }

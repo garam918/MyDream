@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "eb07b0443345988c1791d708beb2aab9",
+    "identityHash": "9fc5125332ddd4548bf581fedd1d5229",
     "entities": [
       {
         "tableName": "dream_analysis_table",
@@ -197,11 +197,67 @@
             "fortuneDate"
           ]
         }
+      },
+      {
+        "tableName": "dream_report_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `reportType` TEXT NOT NULL, `periodStart` TEXT NOT NULL, `periodEnd` TEXT NOT NULL, `sourceFingerprint` TEXT NOT NULL, `payload` TEXT NOT NULL, `savedTime` INTEGER NOT NULL, PRIMARY KEY(`uid`, `reportType`, `periodStart`))",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reportType",
+            "columnName": "reportType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "periodStart",
+            "columnName": "periodStart",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "periodEnd",
+            "columnName": "periodEnd",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceFingerprint",
+            "columnName": "sourceFingerprint",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payload",
+            "columnName": "payload",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedTime",
+            "columnName": "savedTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "uid",
+            "reportType",
+            "periodStart"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eb07b0443345988c1791d708beb2aab9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9fc5125332ddd4548bf581fedd1d5229')"
     ]
   }
 }

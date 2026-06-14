@@ -9,6 +9,7 @@ import com.garam.mydream.core.database.DreamAnalysisDao
 import com.garam.mydream.core.database.MyDreamDatabase
 import com.garam.mydream.core.database.TodayFortuneDao
 import com.garam.mydream.core.database.UserDataDao
+import com.garam.mydream.core.database.DreamReportDao
 import com.garam.mydream.core.network.ApiService
 import com.garam.mydream.core.data.repository.MainRepository
 import com.garam.mydream.core.data.repository.MainRepositoryImpl
@@ -17,6 +18,7 @@ import com.garam.mydream.feature.dreamInterpretation.DreamInterpretationViewMode
 import com.garam.mydream.feature.login.LoginViewModel
 import com.garam.mydream.feature.record.RecordViewModel
 import com.garam.mydream.feature.todayFortune.TodayFortuneViewModel
+import com.garam.mydream.feature.report.ReportViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -30,6 +32,7 @@ fun commonModule() : Module = module {
     single<UserDataDao> { get<MyDreamDatabase>().userDataDao() }
     single<DreamAnalysisDao> { get<MyDreamDatabase>().dreamAnalysisDao() }
     single<TodayFortuneDao> { get<MyDreamDatabase>().todayFortuneDao() }
+    single<DreamReportDao> { get<MyDreamDatabase>().dreamReportDao() }
 
 
     single<MainRepository> { get<MainRepositoryImpl>() }
@@ -62,5 +65,8 @@ fun commonModule() : Module = module {
 
     factory { TodayFortuneViewModel(get()) }
     singleOf(::TodayFortuneViewModel)
+
+    factory { ReportViewModel(get()) }
+    singleOf(::ReportViewModel)
 
 }

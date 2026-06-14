@@ -21,6 +21,17 @@ interface DreamAnalysisDao {
     @Query("SELECT * FROM dream_analysis_table WHERE uid = :uid")
     fun getDreamAnalysis(uid: String) : Flow<List<DreamAnalysisEntity>>
 
+    @Query(
+        """SELECT * FROM dream_analysis_table
+            WHERE uid = :uid AND analysisDate BETWEEN :startDate AND :endDate
+            ORDER BY analysisDate ASC, id ASC"""
+    )
+    suspend fun getDreamAnalysisBetween(
+        uid: String,
+        startDate: String,
+        endDate: String
+    ): List<DreamAnalysisEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveDreamAnalysisList(dreamAnalysis: List<DreamAnalysisEntity>)
 
