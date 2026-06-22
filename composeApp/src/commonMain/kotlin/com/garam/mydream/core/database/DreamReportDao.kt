@@ -11,6 +11,9 @@ interface DreamReportDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveDreamReport(dreamReport: DreamReportEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveDreamReportList(dreamReports: List<DreamReportEntity>)
+
     @Query(
         """SELECT * FROM dream_report_table
             WHERE uid = :uid AND reportType = :reportType AND periodStart = :periodStart
