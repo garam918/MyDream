@@ -43,10 +43,12 @@ import com.garam.mydream.core.designsystem.LightColorPalette
 import com.garam.mydream.core.designsystem.LocalMyColors
 import com.garam.mydream.core.designsystem.MyTheme
 import com.garam.mydream.core.designsystem.fontFamily
+import com.garam.mydream.core.ads.homeBannerAdUnitId
 import com.garam.mydream.core.settings.AppSettingsStorage
-import com.garam.mydream.feature.login.LoginBottomSheetScreen
+import com.garam.mydream.feature.ads.AdScreen
 import com.garam.mydream.feature.calendar.DreamCalendar
 import com.garam.mydream.feature.dreamInterpretation.DreamInterpretation
+import com.garam.mydream.feature.login.LoginBottomSheetScreen
 import com.garam.mydream.feature.onboarding.OnboardingScreen
 import com.garam.mydream.feature.record.DreamRecord
 import com.garam.mydream.feature.setting.AccountManagementScreen
@@ -115,6 +117,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
 
     val navController = rememberNavController()
     var latestDreamResponse by remember { mutableStateOf<DreamResponse?>(null) }
+    var latestDreamContent by remember { mutableStateOf("") }
     var showLoginBottomSheet by remember { mutableStateOf(false) }
 //    val repo = AuthRepositoryProvider().get()
 
@@ -169,8 +172,9 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
             // 메인 홈 화면 (기존에 작성하신 코드)
             composable(Routes.HOME) {
                 HomeBottomNavigation(
-                    onNavigateToDreamInterpretation = { dreamResponse ->
+                    onNavigateToDreamInterpretation = { dreamResponse, dreamContent ->
                         latestDreamResponse = dreamResponse
+                        latestDreamContent = dreamContent
                         navController.navigate(Routes.DREAM_INTERPRETATION)
                     },
                     onNavigateToSettings = {
@@ -183,6 +187,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
                 latestDreamResponse?.let { dreamResponse ->
                     DreamInterpretation(
                         dreamResponse = dreamResponse,
+                        dreamContent = latestDreamContent,
                         onBackPressed = {
                             navController.popBackStack()
                         }
@@ -303,7 +308,7 @@ fun MyCustomTheme(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeBottomNavigation(
-    onNavigateToDreamInterpretation: (DreamResponse) -> Unit,
+    onNavigateToDreamInterpretation: (DreamResponse, String) -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
 
@@ -320,29 +325,31 @@ fun HomeBottomNavigation(
 
     Scaffold(
         bottomBar = {
+            Column {
+                AdScreen(adUnitId = homeBannerAdUnitId())
 
-            NavigationBar(
-                contentColor = MyTheme.colors.mainBackgroundColor,
-                containerColor = MyTheme.colors.mainBackgroundColor
-            ) {
+                NavigationBar(
+                    contentColor = MyTheme.colors.mainBackgroundColor,
+                    containerColor = MyTheme.colors.mainBackgroundColor
+                ) {
 
-                navItems.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        selected = selectedItemIndex == index,
-                        onClick = {
-                            selectedItemIndex = index
-                        },
-                        label = { Text(text = item.label, color = MyTheme.colors.textWhiteColor) },
-                        icon = {
+                    navItems.forEachIndexed { index, item ->
+                        NavigationBarItem(
+                            selected = selectedItemIndex == index,
+                            onClick = {
+                                selectedItemIndex = index
+                            },
+                            label = { Text(text = item.label, color = MyTheme.colors.textWhiteColor) },
+                            icon = {
 //                            Icon(
 //                                imageVector = item.icon,
 //                                contentDescription = item.label
 //                            )
-                        }
-                    )
+                            }
+                        )
+                    }
                 }
             }
-
         },
         topBar = {
 
