@@ -6,4 +6,7 @@ import androidx.compose.runtime.Composable
 internal expect fun bannerAdUnitId(): String
 
 @Composable
+internal expect fun homeBannerAdUnitId(): String
+
+@Composable
 internal expect fun rewardedAdUnitId(): String
