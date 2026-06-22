@@ -72,20 +72,25 @@ class RecordViewModel(
         repository.sendDreamContent(dreamContent)
     }
 
-    fun savedDreamAnalysis(dreamContent: DreamResponse, date: String) = viewModelScope.launch {
+    fun savedDreamAnalysis(
+        dreamResponse: DreamResponse,
+        dreamContent: String,
+        date: String
+    ) = viewModelScope.launch {
 
         val dreamContentEntity = DreamAnalysisEntity(
             id = Uuid.random().toString(),
             uid = "",
-            title = dreamContent.title,
-            score = dreamContent.score,
-            analysis = dreamContent.analysis,
-            energy_label = dreamContent.energy_label,
-            energy_percent = dreamContent.energy_percent,
-            good_points = dreamContent.good_points,
-            warn_points = dreamContent.warn_points,
-            lucky_item = dreamContent.lucky_item,
-            lucky_color = dreamContent.lucky_color,
+            dreamContent = dreamContent,
+            title = dreamResponse.title,
+            score = dreamResponse.score,
+            analysis = dreamResponse.analysis,
+            energy_label = dreamResponse.energy_label,
+            energy_percent = dreamResponse.energy_percent,
+            good_points = dreamResponse.good_points,
+            warn_points = dreamResponse.warn_points,
+            lucky_item = dreamResponse.lucky_item,
+            lucky_color = dreamResponse.lucky_color,
             analysisDate = date
         )
 
