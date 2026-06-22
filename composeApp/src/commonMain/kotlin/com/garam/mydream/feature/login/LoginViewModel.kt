@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.garam.mydream.core.auth.AuthRepository
 import com.garam.mydream.core.data.firebase.FirebaseDataSource
 import com.garam.mydream.core.database.DreamAnalysisDao
+import com.garam.mydream.core.database.DreamReportDao
 import com.garam.mydream.core.database.UserDataDao
 import com.garam.mydream.core.database.UserDataEntity
 import kotlinx.coroutines.launch
@@ -13,6 +14,7 @@ class LoginViewModel(
 
     private val userDao : UserDataDao,
     private val dreamAnalysisDao: DreamAnalysisDao,
+    private val dreamReportDao: DreamReportDao,
     private val firebaseRepo: FirebaseDataSource,
     private val authRepository: AuthRepository
 
@@ -28,12 +30,17 @@ class LoginViewModel(
         val currentUser = runCatching { authRepository.currentUser() }.getOrNull()
         val syncedUser = currentUser ?: userData
         val dreamAnalysisList = runCatching { firebaseRepo.getDreamData() }.getOrDefault(emptyList())
+        val dreamReportList = runCatching { firebaseRepo.getDreamReportData() }.getOrDefault(emptyList())
 
         userDao.upsertUserData(syncedUser)
         firebaseRepo.setUserData(syncedUser)
 
         if (dreamAnalysisList.isNotEmpty()) {
             dreamAnalysisDao.saveDreamAnalysisList(dreamAnalysisList)
+        }
+
+        if (dreamReportList.isNotEmpty()) {
+            dreamReportDao.saveDreamReportList(dreamReportList)
         }
 
         return true
