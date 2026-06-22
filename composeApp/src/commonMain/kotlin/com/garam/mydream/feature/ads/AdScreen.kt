@@ -9,8 +9,8 @@ import com.garam.mydream.core.ads.bannerAdUnitId
 
 @OptIn(DependsOnGoogleMobileAds::class)
 @Composable
-fun AdScreen() {
-    val bannerAd by rememberBannerAd(adUnitId = bannerAdUnitId())
+fun AdScreen(adUnitId: String = bannerAdUnitId()) {
+    val bannerAd by rememberBannerAd(adUnitId = adUnitId)
 
     BannerAd(ad = bannerAd)
 }
