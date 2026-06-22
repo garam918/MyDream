@@ -181,8 +181,8 @@ android {
         applicationId = "com.garam.mydream"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 202606140
-        versionName = "1.0"
+        versionCode = 202606160
+        versionName = "1.0.0"
     }
     packaging {
         resources {
