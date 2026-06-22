@@ -13,6 +13,8 @@ data class DreamAnalysisEntity(
     val id : String,
     @ColumnInfo(defaultValue = "''")
     val uid: String,
+    @ColumnInfo(defaultValue = "''")
+    val dreamContent: String = "",
     val title: String,
     val score: Int,
     val analysis: String,

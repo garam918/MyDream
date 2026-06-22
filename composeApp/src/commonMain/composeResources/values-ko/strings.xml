@@ -74,6 +74,7 @@
     <string name="calendar_delete_failed_message">꿈 기록을 삭제하지 못했어요. 잠시 후 다시 시도해 주세요.</string>
 
     <string name="dream_interpretation_screen_title">해몽 결과</string>
+    <string name="dream_interpretation_dream_content_title">내가 입력한 꿈</string>
     <string name="dream_interpretation_analysis_title">AI 꿈 해몽 분석</string>
     <string name="dream_interpretation_energy_negative">불안/공포</string>
     <string name="dream_interpretation_energy_positive">희망/기대</string>

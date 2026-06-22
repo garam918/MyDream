@@ -4,6 +4,7 @@ import cocoapods.FirebaseAuth.FIRAuth
 import cocoapods.FirebaseFirestoreInternal.FIRFirestore
 import cocoapods.FirebaseFirestoreInternal.FIRQueryDocumentSnapshot
 import com.garam.mydream.core.database.DreamAnalysisEntity
+import com.garam.mydream.core.database.DreamReportEntity
 import com.garam.mydream.core.database.UserDataEntity
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -18,6 +19,7 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
     private val firestore = FIRFirestore.firestore()
     private val userCollectionPath = "Users"
     private val dreamContentCollectionPath = "DreamContent"
+    private val dreamReportCollectionPath = "DreamReport"
 
     override suspend fun setUserData(userDataEntity: UserDataEntity) {
         val uid = FIRAuth.auth().currentUser()?.uid() ?: return
@@ -37,6 +39,16 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
             .setDataAwait(dreamData.copy(uid = uid).toFirestoreMap())
     }
 
+    override suspend fun saveDreamReportData(dreamReportEntity: DreamReportEntity) {
+        val uid = FIRAuth.auth().currentUser()?.uid() ?: return
+
+        firestore.collectionWithPath(userCollectionPath)
+            .documentWithPath(uid)
+            .collectionWithPath(dreamReportCollectionPath)
+            .documentWithPath(dreamReportEntity.documentId())
+            .setDataAwait(dreamReportEntity.copy(uid = uid).toFirestoreMap())
+    }
+
     override suspend fun getDreamData(): List<DreamAnalysisEntity> {
         val uid = FIRAuth.auth().currentUser()?.uid() ?: return emptyList()
 
@@ -44,7 +56,6 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
             firestore.collectionWithPath(userCollectionPath)
                 .documentWithPath(uid)
                 .collectionWithPath(dreamContentCollectionPath)
-                .queryWhereField("uid", isEqualTo = uid)
                 .getDocumentsWithCompletion { snapshot, error ->
                     if (error != null) {
                         continuation.resumeWithException(error.toException())
@@ -54,7 +65,32 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
                     val entities = snapshot?.documents
                         ?.mapNotNull { document ->
                             val data = (document as? FIRQueryDocumentSnapshot)?.data()
-                            data?.toDreamAnalysisEntity()
+                            data?.toDreamAnalysisEntity(uid)
+                        }
+                        .orEmpty()
+
+                    continuation.resume(entities)
+                }
+        }
+    }
+
+    override suspend fun getDreamReportData(): List<DreamReportEntity> {
+        val uid = FIRAuth.auth().currentUser()?.uid() ?: return emptyList()
+
+        return suspendCancellableCoroutine { continuation ->
+            firestore.collectionWithPath(userCollectionPath)
+                .documentWithPath(uid)
+                .collectionWithPath(dreamReportCollectionPath)
+                .getDocumentsWithCompletion { snapshot, error ->
+                    if (error != null) {
+                        continuation.resumeWithException(error.toException())
+                        return@getDocumentsWithCompletion
+                    }
+
+                    val entities = snapshot?.documents
+                        ?.mapNotNull { document ->
+                            val data = (document as? FIRQueryDocumentSnapshot)?.data()
+                            data?.toDreamReportEntity(uid)
                         }
                         .orEmpty()
 
@@ -108,6 +144,7 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
     private fun DreamAnalysisEntity.toFirestoreMap(): Map<Any?, Any?> = mapOf(
         "id" to id,
         "uid" to uid,
+        "dreamContent" to dreamContent,
         "title" to title,
         "score" to score,
         "analysis" to analysis,
@@ -120,9 +157,20 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
         "analysisDate" to analysisDate
     )
 
-    private fun Map<Any?, *>.toDreamAnalysisEntity(): DreamAnalysisEntity? {
+    private fun DreamReportEntity.toFirestoreMap(): Map<Any?, Any?> = mapOf(
+        "uid" to uid,
+        "reportType" to reportType,
+        "periodStart" to periodStart,
+        "periodEnd" to periodEnd,
+        "sourceFingerprint" to sourceFingerprint,
+        "payload" to payload,
+        "savedTime" to savedTime
+    )
+
+    private fun Map<Any?, *>.toDreamAnalysisEntity(currentUid: String): DreamAnalysisEntity? {
         val id = stringValue("id") ?: return null
-        val uid = stringValue("uid") ?: ""
+        val uid = stringValue("uid")?.takeIf { it.isNotBlank() } ?: currentUid
+        val dreamContent = stringValue("dreamContent").orEmpty()
         val title = stringValue("title") ?: return null
         val score = intValue("score") ?: return null
         val analysis = stringValue("analysis") ?: return null
@@ -135,6 +183,7 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
         return DreamAnalysisEntity(
             id = id,
             uid = uid,
+            dreamContent = dreamContent,
             title = title,
             score = score,
             analysis = analysis,
@@ -147,6 +196,28 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
             analysisDate = analysisDate
         )
     }
+
+    private fun Map<Any?, *>.toDreamReportEntity(currentUid: String): DreamReportEntity? {
+        val uid = stringValue("uid")?.takeIf { it.isNotBlank() } ?: currentUid
+        val reportType = stringValue("reportType") ?: return null
+        val periodStart = stringValue("periodStart") ?: return null
+        val periodEnd = stringValue("periodEnd") ?: return null
+        val sourceFingerprint = stringValue("sourceFingerprint") ?: return null
+        val payload = stringValue("payload") ?: return null
+        val savedTime = longValue("savedTime") ?: return null
+
+        return DreamReportEntity(
+            uid = uid,
+            reportType = reportType,
+            periodStart = periodStart,
+            periodEnd = periodEnd,
+            sourceFingerprint = sourceFingerprint,
+            payload = payload,
+            savedTime = savedTime
+        )
+    }
+
+    private fun DreamReportEntity.documentId(): String = "${reportType}_$periodStart"
 
     private fun Map<Any?, *>.stringValue(key: String): String? =
         this[key] as? String

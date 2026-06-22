@@ -103,30 +103,31 @@ fun LoginBottomSheetScreen(
             SocialLoginBtn(onClick = {
 
                 googleLoginScope.launch {
-                    val tokenList = googleAuthHandler.signIn()
+                    runCatching {
+                        val tokenList = googleAuthHandler.signIn()
+                        val idToken = tokenList.getOrNull(0)
+                        val accessToken = tokenList.getOrNull(1).orEmpty()
 
-                    if(tokenList.isNotEmpty()) {
-                        val idToken = tokenList[0].toString()
-                        val accessToken = tokenList[1].toString()
+                        if(!idToken.isNullOrBlank()) {
+                            val userData = repo.get().signInWithGoogle(idToken, accessToken)
 
-                        val userData = repo.get().signInWithGoogle(idToken, accessToken)
+                            if (userData != null) {
+                                val isCompleted = loginViewModel.completeSocialLogin(userData)
 
-                        if (userData != null) {
-                            val isCompleted = loginViewModel.completeSocialLogin(userData)
-
-                            if (isCompleted) {
-                                onSuccessLogin()
+                                if (isCompleted) {
+                                    onSuccessLogin()
+                                }
                             }
-                        }
 
 //                        if(loginScreenType != "DeleteAccount") {
 
 //                        }
-
+                        } else {
+                            println("Google login token is empty")
+                        }
+                    }.onFailure {
+                        println("Google login failed: ${it.message}")
                     }
-
-
-
                 }
 
 //                repo.get().signInWithGoogle()

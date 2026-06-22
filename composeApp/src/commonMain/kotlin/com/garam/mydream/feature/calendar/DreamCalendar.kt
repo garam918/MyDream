@@ -86,7 +86,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @Composable
 fun DreamCalendar(
-    onNavigateToDreamInterpretation: (DreamResponse) -> Unit,
+    onNavigateToDreamInterpretation: (DreamResponse, String) -> Unit,
     calendarViewModel: CalendarViewModel = koinViewModel()
 ) {
 
@@ -282,7 +282,7 @@ fun DreamCalendar(
                 modifier = Modifier.clickable(enabled = true, onClick = {
 
                     selectedDreamAnalysis = item
-                    onNavigateToDreamInterpretation(item.toDreamResponse())
+                    onNavigateToDreamInterpretation(item.toDreamResponse(), item.dreamContent)
 
                     // 꿈 분석 완료 화면으로 이동
                 })

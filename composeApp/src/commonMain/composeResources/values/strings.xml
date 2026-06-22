@@ -72,6 +72,7 @@
     <string name="calendar_delete_failed_message">Couldn’t delete the dream record. Please try again in a moment.</string>
 
     <string name="dream_interpretation_screen_title">Interpretation Result</string>
+    <string name="dream_interpretation_dream_content_title">My Dream</string>
     <string name="dream_interpretation_analysis_title">AI Dream Interpretation</string>
     <string name="dream_interpretation_energy_negative">Anxiety/Fear</string>
     <string name="dream_interpretation_energy_positive">Hope/Expectation</string>

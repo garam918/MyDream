@@ -7,11 +7,11 @@ import androidx.room.Entity
     primaryKeys = ["uid", "reportType", "periodStart"]
 )
 data class DreamReportEntity(
-    val uid: String,
-    val reportType: String,
-    val periodStart: String,
-    val periodEnd: String,
-    val sourceFingerprint: String,
-    val payload: String,
-    val savedTime: Long
+    val uid: String = "",
+    val reportType: String = "",
+    val periodStart: String = "",
+    val periodEnd: String = "",
+    val sourceFingerprint: String = "",
+    val payload: String = "",
+    val savedTime: Long = 0L
 )

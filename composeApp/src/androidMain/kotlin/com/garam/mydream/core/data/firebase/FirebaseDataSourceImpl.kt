@@ -1,6 +1,7 @@
 package com.garam.mydream.core.data.firebase
 
 import com.garam.mydream.core.database.DreamAnalysisEntity
+import com.garam.mydream.core.database.DreamReportEntity
 import com.garam.mydream.core.database.UserDataEntity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -12,13 +13,14 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
     private val firestore = FirebaseFirestore.getInstance()
     private val userCollectionPath = "Users"
     private val dreamContentCollectionPath = "DreamContent"
+    private val dreamReportCollectionPath = "DreamReport"
 
     override suspend fun setUserData(userDataEntity: UserDataEntity) {
         val currentUser = Firebase.auth.currentUser
-        val uid = currentUser?.uid.toString()
+        val uid = currentUser?.uid ?: return
 
         firestore.collection(userCollectionPath)
-            .document(uid).set(userDataEntity).await()
+            .document(uid).set(userDataEntity.copy(uid = uid)).await()
     }
 
     override suspend fun saveDreamData(dreamData: DreamAnalysisEntity) {
@@ -35,6 +37,18 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
 
     }
 
+    override suspend fun saveDreamReportData(dreamReportEntity: DreamReportEntity) {
+        val currentUser = Firebase.auth.currentUser
+        val uid = currentUser?.uid ?: return
+
+        firestore.collection(userCollectionPath)
+            .document(uid)
+            .collection(dreamReportCollectionPath)
+            .document(dreamReportEntity.documentId())
+            .set(dreamReportEntity.copy(uid = uid))
+            .await()
+    }
+
     override suspend fun getDreamData(): List<DreamAnalysisEntity> {
         val currentUser = Firebase.auth.currentUser
         val uid = currentUser?.uid ?: return emptyList()
@@ -42,9 +56,22 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
         return firestore.collection(userCollectionPath)
             .document(uid)
             .collection(dreamContentCollectionPath)
-            .whereEqualTo("uid", uid)
-            .get().await().toObjects(DreamAnalysisEntity::class.java)
+            .get().await()
+            .toObjects(DreamAnalysisEntity::class.java)
+            .map { it.copy(uid = uid) }
 
+    }
+
+    override suspend fun getDreamReportData(): List<DreamReportEntity> {
+        val currentUser = Firebase.auth.currentUser
+        val uid = currentUser?.uid ?: return emptyList()
+
+        return firestore.collection(userCollectionPath)
+            .document(uid)
+            .collection(dreamReportCollectionPath)
+            .get().await()
+            .toObjects(DreamReportEntity::class.java)
+            .map { it.copy(uid = uid) }
     }
 
     override suspend fun deleteDreamData(id: String) {
@@ -55,4 +82,6 @@ class FirebaseDataSourceImpl : FirebaseDataSource {
             .collection(dreamContentCollectionPath)
             .document(id).delete().await()
     }
+
+    private fun DreamReportEntity.documentId(): String = "${reportType}_$periodStart"
 }

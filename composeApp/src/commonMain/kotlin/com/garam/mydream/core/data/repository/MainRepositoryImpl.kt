@@ -95,17 +95,17 @@ class MainRepositoryImpl(
         }
 
         val report = DreamReportAnalyzer.analyze(reportType, periodStart, periodEnd, dreams)
-        dreamReportDao.saveDreamReport(
-            DreamReportEntity(
-                uid = uid,
-                reportType = reportType.name,
-                periodStart = periodStart.toString(),
-                periodEnd = periodEnd.toString(),
-                sourceFingerprint = fingerprint,
-                payload = reportJson.encodeToString(report),
-                savedTime = Clock.System.now().toEpochMilliseconds()
-            )
+        val reportEntity = DreamReportEntity(
+            uid = uid,
+            reportType = reportType.name,
+            periodStart = periodStart.toString(),
+            periodEnd = periodEnd.toString(),
+            sourceFingerprint = fingerprint,
+            payload = reportJson.encodeToString(report),
+            savedTime = Clock.System.now().toEpochMilliseconds()
         )
+        dreamReportDao.saveDreamReport(reportEntity)
+        runCatching { firebaseDataSource.saveDreamReportData(reportEntity) }
         return report
     }
 

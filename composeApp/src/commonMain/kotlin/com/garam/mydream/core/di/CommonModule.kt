@@ -51,7 +51,7 @@ fun commonModule() : Module = module {
     factory { MainViewModel(get()) }
     singleOf(::MainViewModel)
 
-    factory { LoginViewModel(get(), get(), get(), get()) }
+    factory { LoginViewModel(get(), get(), get(), get(), get()) }
     singleOf(::LoginViewModel)
 
     factory { RecordViewModel(get(), get(), get(), get()) }

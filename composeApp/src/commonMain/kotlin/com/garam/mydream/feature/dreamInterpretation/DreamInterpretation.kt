@@ -117,6 +117,7 @@ private fun dreamResultColors(): DreamResultColors {
 @Composable
 fun DreamInterpretation(
     dreamResponse: DreamResponse,
+    dreamContent: String,
     onBackPressed: () -> Unit
 ) {
     val colors = dreamResultColors()
@@ -167,6 +168,12 @@ fun DreamInterpretation(
                 HorizontalDivider(color = colors.cardBorder.copy(alpha = 0.9f))
             }
 
+            if (dreamContent.isNotBlank()) {
+                item {
+                    DreamContentCard(dreamContent = dreamContent)
+                }
+            }
+
             item {
                 AnalysisCard(dreamResponse = dreamResponse)
             }
@@ -192,6 +199,36 @@ fun DreamInterpretation(
             item {
                 Spacer(modifier = Modifier.height(18.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun DreamContentCard(dreamContent: String) {
+    val colors = dreamResultColors()
+
+    SurfaceCard(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Column(modifier = Modifier.padding(24.dp)) {
+            Text(
+                text = stringResource(Res.string.dream_interpretation_dream_content_title),
+                color = colors.primaryText,
+                fontFamily = fontFamily(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Text(
+                text = dreamContent,
+                color = colors.secondaryText,
+                fontFamily = fontFamily(),
+                fontWeight = FontWeight.Medium,
+                fontSize = 15.sp,
+                lineHeight = 26.sp
+            )
         }
     }
 }

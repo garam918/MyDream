@@ -57,6 +57,7 @@ class DreamReportAnalyzerTest {
     ) = DreamAnalysisEntity(
         id = id,
         uid = "user",
+        dreamContent = "dream content",
         title = "title",
         score = score,
         analysis = "analysis",
