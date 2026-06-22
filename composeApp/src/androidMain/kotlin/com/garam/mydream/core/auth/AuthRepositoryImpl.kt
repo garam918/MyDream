@@ -32,52 +32,51 @@ class AuthRepositoryImpl : AuthRepository {
         idToken: String,
         accessToken: String
     ): UserDataEntity? {
-        val googleCredential = GoogleAuthProvider.getCredential(idToken, null)
+        return runCatching {
+            val googleCredential = GoogleAuthProvider.getCredential(idToken, null)
 
-        if(Firebase.auth.currentUser != null && Firebase.auth.currentUser?.isAnonymous == true) {
+            if(Firebase.auth.currentUser != null && Firebase.auth.currentUser?.isAnonymous == true) {
 
-            val task = Firebase.auth.currentUser?.linkWithCredential(googleCredential)
+                val user = runCatching {
+                    Firebase.auth.currentUser?.linkWithCredential(googleCredential)?.await()?.user
+                }.getOrElse {
+                    Firebase.auth.signInWithCredential(googleCredential).await().user
+                }
 
-            var user : FirebaseUser?
+                println("google user $user")
 
-            if(task?.isSuccessful == true) {
-                user = Firebase.auth.currentUser?.linkWithCredential(googleCredential)?.await()?.user
+                val email = user?.email ?: user?.providerData?.firstOrNull { !it.email.isNullOrBlank() }?.email
+                val uid = user?.uid.toString()
+                val loginType = "google"
+
+                UserDataEntity(
+                    uid = uid,
+                    email = email,
+                    loginType = loginType,
+                    usageCount = 2,
+                    rewardedChanceUsed = false,
+                    paid = false
+                )
             }
             else {
-                user = Firebase.auth.signInWithCredential(googleCredential).await().user
+
+                val user = Firebase.auth.signInWithCredential(googleCredential).await().user
+
+                val email = user?.email
+                val uid = user?.uid.toString()
+                val loginType = "google"
+
+                UserDataEntity(
+                    uid = uid,
+                    email = email,
+                    loginType = loginType,
+                    usageCount = 2,
+                    rewardedChanceUsed = false
+                )
             }
-
-            println("google user $user")
-
-
-            val email = user?.email ?: user?.providerData[1]?.email
-            val uid = user?.uid.toString()
-            val loginType = "google"
-
-            return UserDataEntity(
-                uid = uid,
-                email = email,
-                loginType = loginType,
-                usageCount = 2,
-                rewardedChanceUsed = false,
-                paid = false
-            )
-        }
-        else {
-
-            val user = Firebase.auth.signInWithCredential(googleCredential).await().user
-
-            val email = user?.email
-            val uid = user?.uid.toString()
-            val loginType = "google"
-
-            return UserDataEntity(
-                uid = uid,
-                email = email,
-                loginType = loginType,
-                usageCount = 2,
-                rewardedChanceUsed = false
-            )
+        }.getOrElse {
+            println("Android Google login failed: ${it.message}")
+            null
         }
     }
 
