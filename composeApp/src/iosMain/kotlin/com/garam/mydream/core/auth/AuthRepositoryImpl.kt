@@ -3,6 +3,7 @@ package com.garam.mydream.core.auth
 import cocoapods.FirebaseAuth.FIRAuth
 import cocoapods.FirebaseAuth.FIRGoogleAuthProvider
 import cocoapods.FirebaseAuth.FIROAuthProvider
+import cocoapods.FirebaseAuth.FIRUser
 import cocoapods.FirebaseAuth.FIRUserInfoProtocol
 import cocoapods.FirebaseFirestoreInternal.FIRFirestore
 import com.garam.mydream.core.database.UserDataEntity
@@ -23,6 +24,7 @@ import platform.CoreCrypto.CC_SHA256
 import platform.CoreCrypto.CC_SHA256_DIGEST_LENGTH
 import platform.Foundation.NSData
 import platform.Foundation.NSError
+import platform.Foundation.NSNumber
 import platform.Foundation.NSString
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.create
@@ -31,7 +33,6 @@ import platform.UIKit.UIWindow
 import platform.darwin.NSObject
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
-import kotlin.coroutines.resumeWithException
 
 @OptIn(ExperimentalForeignApi::class)
 class AuthRepositoryImpl : AuthRepository {
@@ -76,6 +77,12 @@ class AuthRepositoryImpl : AuthRepository {
         accessToken: String
     ): UserDataEntity? {
         return suspendCancellableCoroutine { cont ->
+            if (idToken.isBlank() || accessToken.isBlank()) {
+                println("iOS Google login token is empty")
+                cont.resume(null) {}
+                return@suspendCancellableCoroutine
+            }
+
             val credential = FIRGoogleAuthProvider.credentialWithIDToken(idToken, accessToken)
 
             val currentUser = FIRAuth.auth().currentUser()
@@ -97,7 +104,7 @@ class AuthRepositoryImpl : AuthRepository {
                                 println("ios uid : ${uid}")
                                 println("ios email : ${email}")
 
-                                println("ios loginType : ${(user.providerData()[0] as? FIRUserInfoProtocol)?.providerID()}")
+                                println("ios loginType : ${user.providerIdOrEmpty()}")
 
 
                                 val userData = UserDataEntity(email = email, uid = uid, loginType = loginType)
@@ -141,7 +148,7 @@ class AuthRepositoryImpl : AuthRepository {
                     println("ios uid : ${uid}")
                     println("ios email : ${email}")
 
-                    println("ios loginType : ${(user.providerData()[0] as? FIRUserInfoProtocol)?.providerID()}")
+                    println("ios loginType : ${user.providerIdOrEmpty()}")
 
 
                     val userData = UserDataEntity(email = email, uid = uid, loginType = loginType)
@@ -162,7 +169,14 @@ class AuthRepositoryImpl : AuthRepository {
 
         val rawNonce = randomNonceString()
         val hashedNonce = sha256(rawNonce)
+        val presentationWindow = UIApplication.sharedApplication.keyWindow
+            ?: UIApplication.sharedApplication.windows.firstOrNull() as? UIWindow
 
+        if (presentationWindow == null) {
+            println("Apple login presentation window is empty")
+            continuation.resume(null) {}
+            return@suspendCancellableCoroutine
+        }
 //            val provider = ASAuthorizationAppleIDProvider()
 //            val request = provider.createRequest().apply {
 //                requestedScopes = listOf(ASAuthorizationScopeEmail, ASAuthorizationScopeFullName)
@@ -173,6 +187,7 @@ class AuthRepositoryImpl : AuthRepository {
         val provider = ASAuthorizationAppleIDProvider()
         val request = provider.createRequest().apply {
             requestedScopes = listOf(ASAuthorizationScopeEmail, ASAuthorizationScopeFullName)
+            nonce = hashedNonce
         }
 
 
@@ -186,7 +201,7 @@ class AuthRepositoryImpl : AuthRepository {
             override fun presentationAnchorForAuthorizationController(controller: ASAuthorizationController): UIWindow {
 //                    return UIApplication.sharedApplication.keyWindow
 //                        ?: UIApplication.sharedApplication.windows.first() as UIWindow
-                return UIApplication.sharedApplication.windows.first() as UIWindow
+                return presentationWindow
             }
 //                = platform.UIKit.UIApplication.sharedApplication.keyWindow!!
 
@@ -199,11 +214,18 @@ class AuthRepositoryImpl : AuthRepository {
                 val idTokenData: NSData? = credential?.identityToken
                 val idToken =
                     idTokenData?.let { NSString.create(it, NSUTF8StringEncoding) }
+                val idTokenString = idToken?.toString()
 
-                println("idToken : ${idToken.toString()}")
+                if (idTokenString.isNullOrBlank()) {
+                    println("Apple login idToken is empty")
+                    continuation.resume(null) {}
+                    return
+                }
+
+                println("idToken : ${idTokenString}")
                 val firebaseCredential =
                     FIROAuthProvider.appleCredentialWithIDToken(
-                        idToken.toString(),
+                        idTokenString,
                         rawNonce,
                         null
                     )
@@ -253,7 +275,7 @@ class AuthRepositoryImpl : AuthRepository {
                         println("ios uid : ${uid}")
                         println("ios email : ${email}")
 
-                        println("ios loginType : ${(user.providerData()[0] as? FIRUserInfoProtocol)?.providerID()}")
+                        println("ios loginType : ${user.providerIdOrEmpty()}")
 
 
                         val userData =
@@ -265,7 +287,7 @@ class AuthRepositoryImpl : AuthRepository {
 
                     } else {
                         println(error?.localizedDescription)
-                        continuation.resumeWithException(Exception(error?.localizedDescription))
+                        continuation.resume(null) {}
                     }
                 }
 
@@ -277,7 +299,7 @@ class AuthRepositoryImpl : AuthRepository {
                 didCompleteWithError: NSError
             ) {
                 println("Apple login error: ${didCompleteWithError.localizedDescription}")
-                continuation.resumeWithException(Exception(didCompleteWithError.localizedDescription))
+                continuation.resume(null) {}
             }
         }
 
@@ -300,6 +322,14 @@ class AuthRepositoryImpl : AuthRepository {
 
         val rawNonce = randomNonceString()
         val hashedNonce = sha256(rawNonce)
+        val presentationWindow = UIApplication.sharedApplication.keyWindow
+            ?: UIApplication.sharedApplication.windows.firstOrNull() as? UIWindow
+
+        if (presentationWindow == null) {
+            println("Apple login presentation window is empty")
+            continuation.resume(null) {}
+            return@suspendCancellableCoroutine
+        }
 
 //            val provider = ASAuthorizationAppleIDProvider()
 //            val request = provider.createRequest().apply {
@@ -311,6 +341,7 @@ class AuthRepositoryImpl : AuthRepository {
         val provider = ASAuthorizationAppleIDProvider()
         val request = provider.createRequest().apply {
             requestedScopes = listOf(ASAuthorizationScopeEmail, ASAuthorizationScopeFullName)
+            nonce = hashedNonce
         }
 
 
@@ -324,7 +355,7 @@ class AuthRepositoryImpl : AuthRepository {
             override fun presentationAnchorForAuthorizationController(controller: ASAuthorizationController): UIWindow {
 //                    return UIApplication.sharedApplication.keyWindow
 //                        ?: UIApplication.sharedApplication.windows.first() as UIWindow
-                return UIApplication.sharedApplication.windows.first() as UIWindow
+                return presentationWindow
             }
 //                = platform.UIKit.UIApplication.sharedApplication.keyWindow!!
 
@@ -337,11 +368,18 @@ class AuthRepositoryImpl : AuthRepository {
                 val idTokenData: NSData? = credential?.identityToken
                 val idToken =
                     idTokenData?.let { NSString.create(it, NSUTF8StringEncoding) }
+                val idTokenString = idToken?.toString()
 
-                println("idToken : ${idToken.toString()}")
+                if (idTokenString.isNullOrBlank()) {
+                    println("Apple login idToken is empty")
+                    continuation.resume(null) {}
+                    return
+                }
+
+                println("idToken : ${idTokenString}")
                 val firebaseCredential =
                     FIROAuthProvider.appleCredentialWithIDToken(
-                        idToken.toString(),
+                        idTokenString,
                         rawNonce,
                         null
                     )
@@ -392,7 +430,7 @@ class AuthRepositoryImpl : AuthRepository {
                         println("ios uid : ${uid}")
                         println("ios email : ${email}")
 
-                        println("ios loginType : ${(user.providerData()[0] as? FIRUserInfoProtocol)?.providerID()}")
+                        println("ios loginType : ${user.providerIdOrEmpty()}")
 
 
                         val userData =
@@ -404,7 +442,7 @@ class AuthRepositoryImpl : AuthRepository {
 
                     } else {
                         println(error?.localizedDescription)
-                        continuation.resumeWithException(Exception(error?.localizedDescription))
+                        continuation.resume(null) {}
                     }
                 }
 
@@ -416,7 +454,7 @@ class AuthRepositoryImpl : AuthRepository {
                 didCompleteWithError: NSError
             ) {
                 println("Apple login error: ${didCompleteWithError.localizedDescription}")
-                continuation.resumeWithException(Exception(didCompleteWithError.localizedDescription))
+                continuation.resume(null) {}
             }
         }
 
@@ -450,6 +488,10 @@ class AuthRepositoryImpl : AuthRepository {
 
 
                 if (result != null) cont.resume(true) {}
+                else {
+                    println("iOS reAuthenticate failed: ${error?.localizedDescription}")
+                    cont.resume(false) {}
+                }
             }
         }
     }
@@ -467,18 +509,14 @@ class AuthRepositoryImpl : AuthRepository {
 
     override suspend fun currentUser(): UserDataEntity? {
 
-        val user = FIRAuth.auth().currentUser()
-        val loginType = if (user?.isAnonymous() == true) "anonymous"
-        else when ((user?.providerData()[0] as? FIRUserInfoProtocol)?.providerID()) {
-            "google.com" -> "google"
-            "apple.com" -> "apple"
-            else -> ""
+        val user = FIRAuth.auth().currentUser() ?: return null
+
+        if (user.isAnonymous()) {
+            return UserDataEntity(uid = user.uid(), email = user.email(), loginType = "anonymous")
         }
 
-        return if (user == null) null else UserDataEntity(
-            uid = user.uid(),
-            email = if (user.isAnonymous()) "" else user.email(), loginType = loginType
-        )
+        val storedUser = getStoredUserData(user.uid())
+        return buildResolvedUser(user, storedUser)
     }
 
     override suspend fun updateUserInfo(userInfo: UserDataEntity) {
@@ -507,7 +545,7 @@ class AuthRepositoryImpl : AuthRepository {
             hash.usePinned { pinnedHash ->
                 CC_SHA256(
                     pinned.addressOf(0),
-                    data.size.toUInt() - 1u,
+                    data.size.toUInt(),
                     hash.refTo(0)
                 ) // -1u는 null terminator 제외
             }
@@ -531,4 +569,89 @@ class AuthRepositoryImpl : AuthRepository {
     }
 
     private val HEX_CHARS = "0123456789abcdef"
+
+    private fun cocoapods.FirebaseAuth.FIRUser.providerIdOrEmpty(): String {
+        return (providerData().firstOrNull() as? FIRUserInfoProtocol)?.providerID().orEmpty()
+    }
+
+    private suspend fun getStoredUserData(uid: String): UserDataEntity? {
+        return suspendCancellableCoroutine { continuation ->
+            FIRFirestore.firestore().collectionWithPath("Users")
+                .documentWithPath(uid)
+                .getDocumentWithCompletion { document, error ->
+                    if (error != null) {
+                        println("iOS currentUser load failed: ${error.localizedDescription}")
+                        continuation.resume(null) {}
+                        return@getDocumentWithCompletion
+                    }
+
+                    val userData = document?.data()?.toUserDataEntity(uid)
+                    continuation.resume(userData) {}
+                }
+        }
+    }
+
+    private fun buildResolvedUser(user: FIRUser, storedUser: UserDataEntity?): UserDataEntity {
+        val resolvedLoginType = storedUser?.loginType
+            ?.takeUnless { it.isBlank() || it == "anonymous" }
+            ?: resolveLoginType(user)
+
+        val resolvedEmail = storedUser?.email
+            ?.takeUnless { it.isBlank() || it == "Guest" }
+            ?: user.email()
+
+        return UserDataEntity(
+            uid = user.uid(),
+            email = resolvedEmail,
+            loginType = resolvedLoginType,
+            usageCount = storedUser?.usageCount ?: 2,
+            rewardedChanceUsed = storedUser?.rewardedChanceUsed ?: false,
+            paid = storedUser?.paid ?: false,
+            lastUseDate = storedUser?.lastUseDate ?: UserDataEntity().lastUseDate
+        )
+    }
+
+    private fun resolveLoginType(user: FIRUser): String {
+        return when (user.providerIdOrEmpty()) {
+            "google.com" -> "google"
+            "apple.com" -> "apple"
+            else -> ""
+        }
+    }
+
+    private fun Map<Any?, *>.toUserDataEntity(currentUid: String): UserDataEntity {
+        return UserDataEntity(
+            uid = stringValue("uid")?.takeIf { it.isNotBlank() } ?: currentUid,
+            email = stringValue("email"),
+            loginType = stringValue("loginType").orEmpty(),
+            usageCount = intValue("usageCount") ?: 2,
+            rewardedChanceUsed = boolValue("rewardedChanceUsed") ?: false,
+            paid = boolValue("paid") ?: false,
+            lastUseDate = stringValue("lastUseDate") ?: UserDataEntity().lastUseDate
+        )
+    }
+
+    private fun Map<Any?, *>.stringValue(key: String): String? =
+        this[key] as? String
+
+    private fun Map<Any?, *>.intValue(key: String): Int? {
+        val value = this[key]
+        return when (value) {
+            is Int -> value
+            is Long -> value.toInt()
+            is Double -> value.toInt()
+            is Float -> value.toInt()
+            is NSNumber -> value.intValue
+            else -> null
+        }
+    }
+
+    private fun Map<Any?, *>.boolValue(key: String): Boolean? {
+        val value = this[key]
+        return when (value) {
+            is Boolean -> value
+            is NSNumber -> value.boolValue
+            else -> null
+        }
+    }
 }
