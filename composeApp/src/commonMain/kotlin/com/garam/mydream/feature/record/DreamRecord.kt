@@ -76,7 +76,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class, DependsOnGoogleMobileAds::class)
 @Composable
 fun DreamRecord(
-    onNavigateToDreamInterpretation: (DreamResponse) -> Unit,
+    onNavigateToDreamInterpretation: (DreamResponse, String) -> Unit,
     viewModel: RecordViewModel = koinViewModel()
 ) {
     val dreamContentMaxLength = 200
@@ -134,9 +134,13 @@ fun DreamRecord(
             val dreamAnalysis = result.getOrNull()
 
             if (dreamAnalysis != null) {
-                viewModel.savedDreamAnalysis(dreamContent = dreamAnalysis, date = selectedDate.toString())
+                viewModel.savedDreamAnalysis(
+                    dreamResponse = dreamAnalysis,
+                    dreamContent = dreamContent,
+                    date = selectedDate.toString()
+                )
                 viewModel.consumeInterpretationChance()
-                onNavigateToDreamInterpretation(dreamAnalysis)
+                onNavigateToDreamInterpretation(dreamAnalysis, dreamContent)
             } else {
                 updateStatus(
                     result.exceptionOrNull()?.message ?: submitFailedMessage
