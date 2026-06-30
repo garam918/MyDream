@@ -124,40 +124,8 @@ Room DAO / Ktor API / Firebase DataSource
 - 꿈 해몽 기록은 Room에 먼저 저장하고 Firestore에 백업합니다.
 - Android/iOS 플랫폼 기능은 `expect/actual` 또는 플랫폼별 source set으로 분리합니다.
 
-## 실행 방법
+## 플레이스토어
 
-### Android
+## 앱스토어
 
-```bash
-./gradlew :composeApp:installDebug
-```
-
-또는 Android Studio에서 `composeApp` 실행 구성을 선택해 실행합니다.
-
-### iOS
-
-```bash
-./gradlew :composeApp:podInstall
-open iosApp/iosApp.xcworkspace
-```
-
-Xcode에서 `iosApp` 타깃을 선택해 실행합니다.
-
-## 환경 설정
-
-Firebase와 Google 로그인, 광고 SDK를 사용하므로 다음 설정 파일이 필요합니다.
-
-- `composeApp/google-services.json`
-- `iosApp/GoogleService-Info.plist`
-- `iosApp/iosApp/GoogleService-Info.plist`
-- `iosApp/Configuration/Config.xcconfig`
-
-API 호출은 현재 `ApiService`에 정의된 Cloud Run 엔드포인트를 사용합니다.
-
-## 테스트
-
-```bash
-./gradlew test
-```
-
-공통 테스트는 `composeApp/src/commonTest` 아래에서 관리합니다.
+https://apps.apple.com/kr/app/mydream-ai-%EA%BF%88%ED%95%B4%EB%AA%BD/id6762837084
